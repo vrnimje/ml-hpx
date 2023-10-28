@@ -64,22 +64,25 @@ int hpx_main(int argc, char* argv[]) {
     float W = distribution(gen), B = distribution(gen);
     float prev_W, prev_B;
 
-    int N = 10000;
-    float alpha = 0.015;
+    int N = 1500;
+    float alpha = 0.00077;
 
     // Gradient Descent
 
     for (int k=0; k<N; k++) {
-    
+        
         float dj_dw = 0, dj_db = 0;
-
+        float J = 0;
         for (int i=0; i<n; i++) {
+            J += (f(X[i], W, B) - Y[i]) * (f(X[i], W, B) - Y[i]) ;
             dj_dw += (f(X[i], W, B) - Y[i]) * X[i];
             dj_db += (f(X[i], W, B) - Y[i]);
         }
-
+        J /= (n * 2);
         dj_dw /= n;
         dj_db /= n;
+
+        std::cout << J << ", ";
 
         //std::cout << "Derivatives: " << dj_dw << "," << dj_db << "\n";
 
@@ -91,6 +94,8 @@ int hpx_main(int argc, char* argv[]) {
 
         // if (prev_W == W && prev_B == B) break;
     }
+
+    std::cout << "\n";
 
     std::cout << "Final parameters: " << W << "," << B << "\n";
 
