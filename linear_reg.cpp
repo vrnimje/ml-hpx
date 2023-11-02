@@ -7,12 +7,16 @@
 #include <random>
 #include <vector>
 #include <fstream>
+#include <numeric>
+#include <execution>
 
 float f(float X, float W, float B) {
     return (W*X + B);
 }
 
 int hpx_main(int argc, char* argv[]) {
+
+    hpx::chrono::high_resolution_timer t;
     std::string filename;
     if (argc > 1) {
         filename = argv[1];
@@ -69,22 +73,42 @@ int hpx_main(int argc, char* argv[]) {
 
     // Gradient Descent
 
+    // for (int k=0; k<N; k++) {
+        
+    //     float dj_dw = 0, dj_db = 0;
+    //     float J = 0;
+    //     for (int i=0; i<n; i++) {
+    //         J += (f(X[i], W, B) - Y[i]) * (f(X[i], W, B) - Y[i]) ;
+    //         dj_dw += (f(X[i], W, B) - Y[i]) * X[i];
+    //         dj_db += (f(X[i], W, B) - Y[i]);
+    //     }
+    //     J /= (n * 2);
+    //     dj_dw /= n;
+    //     dj_db /= n;
+
+    //     // std::cout << J << ", ";
+
+    //     //std::cout << "Derivatives: " << dj_dw << "," << dj_db << "\n";
+
+    //     prev_W = W;
+    //     prev_B = B;
+
+    //     W -= alpha * dj_dw;
+    //     B -= alpha * dj_dw;
+
+    //     // if (prev_W == W && prev_B == B) break;
+    // }
+
     for (int k=0; k<N; k++) {
         
         float dj_dw = 0, dj_db = 0;
-        float J = 0;
-        for (int i=0; i<n; i++) {
-            J += (f(X[i], W, B) - Y[i]) * (f(X[i], W, B) - Y[i]) ;
+        hpx::for_loop(hpx::execution::par, 0, n, [&](auto i) {
             dj_dw += (f(X[i], W, B) - Y[i]) * X[i];
             dj_db += (f(X[i], W, B) - Y[i]);
-        }
-        J /= (n * 2);
+        });
+
         dj_dw /= n;
         dj_db /= n;
-
-        std::cout << J << ", ";
-
-        //std::cout << "Derivatives: " << dj_dw << "," << dj_db << "\n";
 
         prev_W = W;
         prev_B = B;
@@ -94,10 +118,8 @@ int hpx_main(int argc, char* argv[]) {
 
         // if (prev_W == W && prev_B == B) break;
     }
-
-    std::cout << "\n";
-
-    std::cout << "Final parameters: " << W << "," << B << "\n";
+    char const* fmt = "Final Parameters: W = {1}, B = {2}\nElapsed time: {3} [s]\n";
+    hpx::util::format_to(std::cout, fmt, W, B, t.elapsed());
 
     return hpx::local::finalize();
 }
