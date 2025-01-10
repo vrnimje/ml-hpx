@@ -1,20 +1,27 @@
 #include <hpx/algorithm.hpp>
+#include <hpx/executors/execution_policy.hpp>
 #include <hpx/future.hpp>
 #include <hpx/init.hpp>
 #include <hpx/iostream.hpp>
+#include <hpx/parallel/algorithms/transform_reduce.hpp>
+#include <hpx/testing/performance.hpp>
 
 #include <iostream>
+#include <numeric>
 #include <random>
+#include <utility>
 #include <vector>
 #include <fstream>
+#include <algorithm>
+#include <ranges>
+#include <execution>
 
+// Linear equation: Y = WX + B
 float f(float X, float W, float B) {
     return (W*X + B);
 }
 
 int hpx_main(int argc, char* argv[]) {
-
-    hpx::chrono::high_resolution_timer t;
     std::string filename;
     if (argc > 1) {
         filename = argv[1];
@@ -29,34 +36,33 @@ int hpx_main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::vector<float> X, Y;
+    std::vector<std::pair<float, float>> D;
     std::string line;
 
     std::getline(in, line); // Skip column names
     int l = 0;
 
     while (std::getline(in, line)) {
-        std::stringstream L(line); 
+        std::stringstream L(line);
         std::string data;
+        std::pair<float, float> p;
+
         while(getline(L, data, ',')) {
             // std::cout << data << "\n";
             l++;
             if (l%2 != 0) {
-                X.push_back(std::stof(data));
+                p.first = std::stof(data);
             }
-            else 
-                Y.push_back(std::stof(data));
+            else {
+                p.second = std::stof(data);
+            }
         }
+
+        D.push_back(std::move(p));
     }
 
     // No. of data points
-    int n = X.size();
-
-    // for (int i=0; i<n; i++) {
-    //     std::cout << Y[i] << ", "; 
-    // }
-
-    // Linear equation: Y = WX + B
+    int n = D.size();
 
     std::random_device rd;  // Will be used to obtain a seed for the random number engine
     std::mt19937 gen(rd());
@@ -66,61 +72,130 @@ int hpx_main(int argc, char* argv[]) {
     float W = distribution(gen), B = distribution(gen);
     float prev_W, prev_B;
 
-    int N = 1500;
-    float alpha = 0.00077;
+    int N = 5000;
+    float alpha = 0.00001;
 
-    // Gradient Descent
+    // Sequential Gradient Descent - Using for loop
+    hpx::util::perftests_report("Sequential GD, for-loop", "seq", 10, [&]{
+        for (int k=0; k<N; k++) {
+            float dj_dw = 0, dj_db = 0;
+            for (int i=0; i<n; i++) {
+                dj_dw += (f(D[i].first, W, B) - D[i].second) * D[i].first;
+                dj_db += (f(D[i].first, W, B) - D[i].second);
+            }
 
-    // for (int k=0; k<N; k++) {
-        
-    //     float dj_dw = 0, dj_db = 0;
-    //     float J = 0;
-    //     for (int i=0; i<n; i++) {
-    //         J += (f(X[i], W, B) - Y[i]) * (f(X[i], W, B) - Y[i]) ;
-    //         dj_dw += (f(X[i], W, B) - Y[i]) * X[i];
-    //         dj_db += (f(X[i], W, B) - Y[i]);
-    //     }
-    //     J /= (n * 2);
-    //     dj_dw /= n;
-    //     dj_db /= n;
+            dj_dw /= n;
+            dj_db /= n;
 
-    //     // std::cout << J << ", ";
+            W -= alpha * dj_dw;
+            B -= alpha * dj_db;
+        }
+    });
 
-    //     //std::cout << "Derivatives: " << dj_dw << "," << dj_db << "\n";
+    char const* fmt = "Final Parameters: W = {1}, B = {2}\n";
+    hpx::util::format_to(std::cout, fmt, W, B);
 
-    //     prev_W = W;
-    //     prev_B = B;
+    W = distribution(gen), B = distribution(gen);
 
-    //     W -= alpha * dj_dw;
-    //     B -= alpha * dj_dw;
+    // Gradient Descent - Using STL, seq
+    hpx::util::perftests_report("Linear Regression GD, STL, seq", "seq  ", 10, [&]{
+        for (int k=0; k<N; k++) {
+            auto res = std::transform_reduce(
+                D.begin(),
+                D.end(),
+                std::make_pair(0.0f, 0.0f),
+                [&](auto a, auto b) {
+                    a.first = a.first + b.first;
+                    a.second = a.second + b.second;
+                    return a;
+                },
+                [&](auto a) {
+                    a.first += (f(a.first, W, B) - a.second) * a.first;
+                    a.second += (f(a.first, W, B) - a.second);
+                    return a;
+                }
+            );
 
-    //     // if (prev_W == W && prev_B == B) break;
-    // }
+            float dj_dw = res.first, dj_db = res.second;
+            dj_dw /= n;
+            dj_db /= n;
 
+            W -= alpha * dj_dw;
+            B -= alpha * dj_db;
+        }
+    });
 
-    // Parallelisation attempt
-    for (int k=0; k<N; k++) {
-        
-        float dj_dw = 0, dj_db = 0;
-        hpx::experimental::for_loop(hpx::execution::par, 0, n, [&](auto i) {
-            dj_dw += (f(X[i], W, B) - Y[i]) * X[i];
-            dj_db += (f(X[i], W, B) - Y[i]);
-        });
+    hpx::util::format_to(std::cout, fmt, W, B);
 
-        dj_dw /= n;
-        dj_db /= n;
+    W = distribution(gen), B = distribution(gen);
 
-        prev_W = W;
-        prev_B = B;
+    // Gradient Descent - Using STL, par
+    hpx::util::perftests_report("Linear Regression, GD, STL, par", "std::execution::par", 10, [&]{
+        for (int k=0; k<N; k++) {
+            auto res = std::transform_reduce(
+                std::execution::par,
+                D.begin(),
+                D.end(),
+                std::make_pair(0.0f, 0.0f),
+                [&](auto a, auto b) {
+                    a.first = a.first + b.first;
+                    a.second = a.second + b.second;
+                    return a;
+                },
+                [&](auto a) {
+                    a.first += (f(a.first, W, B) - a.second) * a.first;
+                    a.second += (f(a.first, W, B) - a.second);
+                    return a;
+                }
+            );
 
-        W -= alpha * dj_dw;
-        B -= alpha * dj_dw;
+            float dj_dw = res.first, dj_db = res.second;
 
-        // if (prev_W == W && prev_B == B) break;
-    }
-    
-    char const* fmt = "Final Parameters: W = {1}, B = {2}\nElapsed time: {3} [s]\n";
-    hpx::util::format_to(std::cout, fmt, W, B, t.elapsed());
+            dj_dw /= n;
+            dj_db /= n;
+
+            W -= alpha * dj_dw;
+            B -= alpha * dj_db;
+        }
+    });
+
+    hpx::util::format_to(std::cout, fmt, W, B);
+
+    W = distribution(gen), B = distribution(gen);
+
+    // Gradient Descent, using HPX
+    hpx::util::perftests_report("Linear Regression, GD, HPX, par", "hpx::execution::par", 10, [&]{
+        for (int k=0; k<N; k++) {
+            auto res = hpx::transform_reduce(
+                hpx::execution::par,
+                D.begin(),
+                D.end(),
+                std::make_pair(0.0f, 0.0f),
+                [&](auto a, auto b) {
+                    a.first = a.first + b.first;
+                    a.second = a.second + b.second;
+                    return a;
+                },
+                [&](auto a) {
+                    a.first += (f(a.first, W, B) - a.second) * a.first;
+                    a.second += (f(a.first, W, B) - a.second);
+                    return a;
+                }
+            );
+
+            float dj_dw = res.first, dj_db = res.second;
+
+            dj_dw /= n;
+            dj_db /= n;
+
+            W -= alpha * dj_dw;
+            B -= alpha * dj_db;
+        }
+    });
+
+    hpx::util::format_to(std::cout, fmt, W, B);
+
+    hpx::util::perftests_print_times();
 
     return hpx::local::finalize();
 }

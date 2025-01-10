@@ -1,97 +1,54 @@
 # ML - HPX
 
-This repository contains my attempts to parallelize ML algorithms, starting with linear regression, using the HPX C++ library
+Implementation of common ML algorithms from scratch, and improving their runtime using HPX.
 
-### Results 
-
-Sequential execution, without any attempts to parallelize it, gave decent linear function fitting the dataset, named random1 in the `datasets` folder
-
-```cpp
-for (int k=0; k<N; k++) {  
-    float dj_dw = 0, dj_db = 0;
-    float J = 0;
-    for (int i=0; i<n; i++) {
-        J += (f(X[i], W, B) - Y[i]) * (f(X[i], W, B) - Y[i]) ;
-        dj_dw += (f(X[i], W, B) - Y[i]) * X[i];
-        dj_db += (f(X[i], W, B) - Y[i]);
-    }
-    J /= (n * 2);
-    dj_dw /= n;
-    dj_db /= n;
-
-    prev_W = W;
-    prev_B = B;
-
-    W -= alpha * dj_dw;
-    B -= alpha * dj_dw;
-}
-```
-
-![Alt text](./assets/linear_reg_non_par.png)
-
-And now we see how long it takes to execute the model
+## Build Instructions
+Pre-requisites: [Installing HPX](https://hpx-docs.stellar-group.org/latest/html/quickstart.html)
 
 ```sh
-$ ./linear_reg ../datasets/random1.csv 
-Final Parameters: W = 0.767133, B = 0.255443
-Elapsed time: 0.002966 [s]
-
-$ ./linear_reg ../datasets/random1.csv 
-Final Parameters: W = 0.813219, B = -0.205705
-Elapsed time: 0.003122 [s]
-
-$ ./linear_reg ../datasets/random1.csv 
-Final Parameters: W = 0.823522, B = -0.308800
-Elapsed time: 0.002654 [s]
+cmake -S . -Bbuild -GNinja
+cmake --build build
+./build/linear_reg [path_to_dataset]
 ```
 
-Now, these are my steps to parallelize it
+## Algorithms
 
-1. Using `hpx::experimental::for_loop`, 
+### 1. Simple Linear Regression (One Variable), using Gradient Descent
+[linear_reg.cpp](./linear_reg.cpp)
 
-```cpp
-for (int k=0; k<N; k++) {  
-    float dj_dw = 0, dj_db = 0;
-    
-    hpx::experimental::for_loop(hpx::execution::par, 0, n, [&](auto i) {
-        dj_dw += (f(X[i], W, B) - Y[i]) * X[i];
-        dj_db += (f(X[i], W, B) - Y[i]);
-    });
+- Linear Regression GD, seq for-loop: Used a classic for loop for performing Gradient Descent (GD)
+- Linear Regression GD, STL, seq: Using [`std::transform_reduce`](https://en.cppreference.com/w/cpp/algorithm/transform_reduce)
+- Linear Regression GD, STL, par: Using `std::transform_reduce` with [`std::execution::par`](https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag) execution policy
+- Linear Regression GD, HPX, par: Using [`hpx::transform_reduce`](https://hpx-docs.stellar-group.org/latest/html/libs/core/algorithms/api/transform_reduce.html) with [`hpx::execution::par`](https://hpx-docs.stellar-group.org/branches/master/html/libs/core/executors/api/execution_policy.html) execution policy
 
-
-    dj_dw /= n;
-    dj_db /= n;
-
-    prev_W = W;
-    prev_B = B;
-
-    W -= alpha * dj_dw;
-    B -= alpha * dj_dw;
-}
-
-```
-
-But this actually has more compilation time than expected. 
-
+Results with [dataset containing 10000 points](./datasets/linear_regressor_dataset_10000.csv):
 ```sh
-$ ./linear_reg ../datasets/random1.csv 
-Final Parameters: W = 0.601210, B = 2.026218
-Elapsed time: 0.021923 [s]
+Final Parameters: W = 2.530294, B = 3.038263
+Final Parameters: W = 2.558153, B = 0.183712
+Final Parameters: W = 2.558576, B = 0.155537
+Final Parameters: W = 2.559148, B = 0.117489
 
-$ ./linear_reg ../datasets/random1.csv 
-Final Parameters: W = 0.697301, B = 1.118010
-Elapsed time: 0.038696 [s]
+Results:
 
-$ ./linear_reg ../datasets/random1.csv 
-Final Parameters: W = 0.710964, B = 1.004072
-Elapsed time: 0.050179 [s]
+name: Sequential GD, for-loop,
+executor: seq,
+average: 0.742246513333333
+
+
+name: Linear Regression GD, STL, seq,
+executor: seq,
+average: 0.976717908291667
+
+
+name: Linear Regression, GD, STL, par,
+executor: std::execution::par,
+average: 0.975341845875
+
+
+name: Linear Regression, GD, HPX, par,
+executor: hpx::execution::par,
+average: 0.62639202725
 ```
 
-I believe its due to the following reasons
-
-- Dependency between each iteration, i.e., the derivatives
-- Since dataset is large, parallelizing for such large number of data points adds overhead than actually improving performance
-
-### Future work
-
-I will explore HPX library and its functionality further, so I can hopefully improve the performance, and look into the above result(s) as well
+Plot:
+<img src="./assets/linear_reg.png" width="100%">
