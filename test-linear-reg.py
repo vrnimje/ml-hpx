@@ -22,7 +22,9 @@ def plot_linear_regressor(dataset_path, parameter_pairs):
     plt.grid(True)
     plt.show()
 
+
 if __name__ == "__main__":
     dataset_path = sys.argv[1]  # Path to the dataset
-    parameter_pairs = [(2.530294, 3.038263), (2.558153, 0.183712), (2.558576, 0.155537), (2.559148, 0.117489)]  # List of (W, B) pairs
+    parameter_pairs = [(2.577991, -0.136139), (2.514959, 3.057930),
+                       (2.530195, 2.043939), (2.523242, 2.506657)]  # List of (W, B) pairs
     plot_linear_regressor(dataset_path, parameter_pairs)

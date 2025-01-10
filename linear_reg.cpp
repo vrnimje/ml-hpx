@@ -1,6 +1,5 @@
 #include <hpx/algorithm.hpp>
 #include <hpx/executors/execution_policy.hpp>
-#include <hpx/future.hpp>
 #include <hpx/init.hpp>
 #include <hpx/iostream.hpp>
 #include <hpx/parallel/algorithms/transform_reduce.hpp>
@@ -69,7 +68,7 @@ int hpx_main(int argc, char* argv[]) {
 
     std::uniform_real_distribution<float> distribution(-1.0, 1.0);
 
-    float W = distribution(gen), B = distribution(gen);
+    float W, B;
     float prev_W, prev_B;
 
     int N = 5000;
@@ -77,6 +76,8 @@ int hpx_main(int argc, char* argv[]) {
 
     // Sequential Gradient Descent - Using for loop
     hpx::util::perftests_report("Sequential GD, for-loop", "seq", 10, [&]{
+        W = distribution(gen), B = distribution(gen);
+        
         for (int k=0; k<N; k++) {
             float dj_dw = 0, dj_db = 0;
             for (int i=0; i<n; i++) {
@@ -95,10 +96,9 @@ int hpx_main(int argc, char* argv[]) {
     char const* fmt = "Final Parameters: W = {1}, B = {2}\n";
     hpx::util::format_to(std::cout, fmt, W, B);
 
-    W = distribution(gen), B = distribution(gen);
-
     // Gradient Descent - Using STL, seq
     hpx::util::perftests_report("Linear Regression GD, STL, seq", "seq  ", 10, [&]{
+        W = distribution(gen), B = distribution(gen);
         for (int k=0; k<N; k++) {
             auto res = std::transform_reduce(
                 D.begin(),
@@ -127,10 +127,10 @@ int hpx_main(int argc, char* argv[]) {
 
     hpx::util::format_to(std::cout, fmt, W, B);
 
-    W = distribution(gen), B = distribution(gen);
-
     // Gradient Descent - Using STL, par
     hpx::util::perftests_report("Linear Regression, GD, STL, par", "std::execution::par", 10, [&]{
+        W = distribution(gen), B = distribution(gen);
+
         for (int k=0; k<N; k++) {
             auto res = std::transform_reduce(
                 std::execution::par,
@@ -161,10 +161,10 @@ int hpx_main(int argc, char* argv[]) {
 
     hpx::util::format_to(std::cout, fmt, W, B);
 
-    W = distribution(gen), B = distribution(gen);
-
     // Gradient Descent, using HPX
     hpx::util::perftests_report("Linear Regression, GD, HPX, par", "hpx::execution::par", 10, [&]{
+        W = distribution(gen), B = distribution(gen);
+
         for (int k=0; k<N; k++) {
             auto res = hpx::transform_reduce(
                 hpx::execution::par,

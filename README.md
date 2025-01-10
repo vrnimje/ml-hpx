@@ -16,6 +16,8 @@ cmake --build build
 ### 1. Simple Linear Regression (One Variable), using Gradient Descent
 [linear_reg.cpp](./linear_reg.cpp)
 
+<img src="https://miro.medium.com/v2/resize:fit:900/1*G3evFxIAlDchOx5Wl7bV5g.png" width="100%">
+
 - Linear Regression GD, seq for-loop: Used a classic for loop for performing Gradient Descent (GD)
 - Linear Regression GD, STL, seq: Using [`std::transform_reduce`](https://en.cppreference.com/w/cpp/algorithm/transform_reduce)
 - Linear Regression GD, STL, par: Using `std::transform_reduce` with [`std::execution::par`](https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag) execution policy
@@ -23,32 +25,35 @@ cmake --build build
 
 Results with [dataset containing 10000 points](./datasets/linear_regressor_dataset_10000.csv):
 ```sh
-Final Parameters: W = 2.530294, B = 3.038263
-Final Parameters: W = 2.558153, B = 0.183712
-Final Parameters: W = 2.558576, B = 0.155537
-Final Parameters: W = 2.559148, B = 0.117489
-
+$ ./build/linear_reg datasets/linear_regressor_dataset_10000.csv
+Final Parameters: W = 2.577991, B = -0.136139
+Final Parameters: W = 2.514959, B = 3.057930
+Final Parameters: W = 2.530195, B = 2.043939
+Final Parameters: W = 2.523242, B = 2.506657
 Results:
 
 name: Sequential GD, for-loop,
 executor: seq,
-average: 0.742246513333333
+average: 0.72105570925
 
 
 name: Linear Regression GD, STL, seq,
-executor: seq,
-average: 0.976717908291667
+executor: seq  ,
+average: 0.961342297166667
 
 
 name: Linear Regression, GD, STL, par,
 executor: std::execution::par,
-average: 0.975341845875
+average: 0.945831261333333
 
 
 name: Linear Regression, GD, HPX, par,
 executor: hpx::execution::par,
-average: 0.62639202725
+average: 0.51301071275
+
 ```
+
+Note: Execution time of each implementation is averaged for 10 runs
 
 Plot:
 <img src="./assets/linear_reg.png" width="100%">
