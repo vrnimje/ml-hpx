@@ -53,7 +53,48 @@ average: 0.51301071275
 
 ```
 
-Note: Execution time of each implementation is averaged for 10 runs
+Note: Execution time of each implementation is averaged for 25 runs
 
 Plot:
+
 <img src="./assets/linear_reg.png" width="100%">
+
+### 2. Simple Logistic Regression (One Variable), using Gradient Descent
+[log_reg.cpp](./log_reg.cpp)
+
+Results with [dataset containing 10000 points](./datasets/logistic_regression_dataset_10000.csv):
+
+```sh
+Results:
+
+name: Sequential GD, for-loop
+executor: seq
+average: 9.99655853479999999983e-01
+Final Parameters: W = 0.129403, B = -0.390624
+Accuracy: 0.976667
+
+name: Linear Regression GD, STL, seq
+executor: seq
+average: 1.01029237284000000005e+00
+Final Parameters: W = 0.001630, B = -0.004954
+Accuracy: 0.976333
+
+name: Linear Regression, GD, STL, par
+executor: std::execution::par
+average: 1.01217441688000000003e+00
+Final Parameters: W = 0.105150, B = -0.318801
+Accuracy: 0.976333
+
+name: Linear Regression, GD, HPX, par
+executor: hpx::execution::par
+average: 6.61743677679999999972e-01
+Final Parameters: W = 0.002196, B = -0.006469
+Accuracy: 0.977667
+```
+
+And the accuracy is comparable to [scikit-learn](./log_reg.py)
+
+```sh
+$ python3 log_reg.py
+Accuracy: 0.98
+```
