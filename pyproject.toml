@@ -1,0 +1,25 @@
+[build-system]
+requires = ["scikit-build-core >=0.4.3", "nanobind >=1.3.2"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "ml-hpx"
+version = "0.0.1"
+description = "Implementation of Machine Learning algorithms using HPX, and providing Pythonic bindings for them using Nanobind"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [{ name = "Vedant Nimje", email = "vedantnimjed@gmail.com" }]
+classifiers = ["License :: BSD"]
+
+[project.urls]
+Homepage = "https://github.com/vrnimje/ml-hpx"
+
+[tool.scikit-build]
+# Protect the configuration against future changes in scikit-build-core
+minimum-version = "0.4"
+
+# Setuptools-style build caching in a local directory
+build-dir = "build/{wheel_tag}"
+
+# Build stable ABI wheels for CPython 3.12+
+wheel.py-api = "cp312"

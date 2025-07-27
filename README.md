@@ -9,54 +9,21 @@ Pre-requisites: [Installing HPX](https://hpx-docs.stellar-group.org/latest/html/
 cd build
 git clone --recursive https://github.com/vrnimje/ml-hpx.git
 
-cmake -S . -Bbuild -GNinja
-cmake --build build
-./build/linear_reg_test [path_to_dataset]
+pip install .
 ```
 
 ### Utilising the bindings
 
-1. Linear Regression
 ```sh
-cd build
-$ python3
-Python 3.12.3 (main, Jun 18 2025, 17:59:45) [GCC 13.3.0] on linux
-Type "help", "copyright", "credits" or "license" for more information.
->>> from ml_hpx import LinearRegression
->>> lin_reg = LinearRegression(5000, 1e-5)
->>>
->>> import pandas as pd
->>> df = pd.read_csv('../datasets/linear_regressor_dataset_10000.csv')
->>> X = df['x']
->>> Y = df['y']
->>>
->>> data = list(zip(X, Y))
->>>
->>> lin_reg.train(data)
+(env) $ python python_tests/lin_reg.py
 52.71177673339844
->>> lin_reg.predict(79.86908521380188)
 205.71873474121094
-```
-
-2. Logistic Regression
-
-```sh
-$ python3
-Python 3.12.3 (main, Jun 18 2025, 17:59:45) [GCC 13.3.0] on linux
-Type "help", "copyright", "credits" or "license" for more information.
->>> from ml_hpx import LogisticRegression
->>> import pandas as pd
->>>
->>> df = pd.read_csv('../datasets/logistic_regression_dataset_10000.csv')
->>>
->>> X = df['x']
->>> Y = df['class']
->>>
->>> data = list(zip(X, Y))
->>>
->>> log_reg = LogisticRegression(4000, 0.001)
->>> log_reg.train(data)
+src/tcmalloc.cc:304] Attempt to free invalid pointer 0x257e560
+Segmentation fault (core dumped)
+(env) $ python python_tests/log_reg.py
 0.977400004863739
+src/tcmalloc.cc:304] Attempt to free invalid pointer 0x1db1dd20
+Segmentation fault (core dumped)
 ```
 
 ## Misc. Benchmarks

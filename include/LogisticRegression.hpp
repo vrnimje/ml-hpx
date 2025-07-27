@@ -13,17 +13,15 @@ private:
     float alpha; // Learning rate
     int epochs; // Epochs
 
-    std::random_device rd;  // Will be used to obtain a seed for the random number engine
     std::mt19937 gen;
     std::uniform_real_distribution<float> distribution;
 
 public:
-    LogisticRegression(int num_epochs = 5000, float learning_rate = 1e-3)
-        :   rd(),                       // 1. Initialize the random device
-            gen(rd()),                  // 2. Seed the generator using the device
-            distribution(-1.0f, 1.0f),  // 3. Initialize the distribution range
-            W(distribution(gen)),       // 4. Initialize W with a random value
-            B(distribution(gen)),       // 5. Initialize B with a random value (fixed)
+    LogisticRegression(int num_epochs = 5000, float learning_rate = 1e-3, unsigned int seed = 0)
+        :   gen(seed),                  // 1. Seed the generator using the device
+            distribution(-1.0f, 1.0f),  // 2. Initialize the distribution range
+            W(distribution(gen)),       // 3. Initialize W with a random value
+            B(distribution(gen)),       // 4. Initialize B with a random value (fixed)
             alpha(learning_rate),
             epochs(num_epochs)
     {}

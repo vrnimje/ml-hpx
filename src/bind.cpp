@@ -7,13 +7,14 @@
 
 namespace nb = nanobind;
 
-NB_MODULE(ml_hpx, m) {
+NB_MODULE(_ml_hpx_impl, m) {
     nb::class_<LinearRegression>(m, "LinearRegression")
         // Constructor binding
-        .def(nb::init<int, float>(),
+        .def(nb::init<int, float, unsigned int>(), // Update signature
             "Initializes the LinearRegression model.",
             nb::arg("num_epochs") = 5000,
-            nb::arg("learning_rate") = 1e-3)
+            nb::arg("learning_rate") = 1e-3,
+            nb::arg("seed") = 0) // Add default seed argument
 
         // Method bindings
         .def("f", &LinearRegression::f,
