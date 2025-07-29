@@ -1,6 +1,6 @@
 # ML - HPX
 
-Implementation of common ML algorithms from scratch in C++, providing bindings for them in Python using Nanobind, and utilisng HPX as the runtime.
+Implementation of common ML algorithms from scratch in C++, utilisng HPX as the runtime and providing bindings for them in Python using Nanobind.
 
 ## Build Instructions
 Pre-requisites: [Installing HPX](https://hpx-docs.stellar-group.org/latest/html/quickstart.html)
@@ -14,16 +14,82 @@ pip install .
 
 ### Utilising the bindings
 
+1. Linear Regression
+
+[Script](./python_tests/lin_reg.py):
+
+```py
+from ml_hpx import LinearRegression
+import pandas as pd
+
+df = pd.read_csv('./datasets/linear_regressor_dataset_10000.csv')
+X = df['x']
+Y = df['y']
+
+data = list(zip(X, Y))
+
+lin_reg = LinearRegression(5000, 1e-5)
+
+print(lin_reg.train(data))
+print(lin_reg.predict(79.8690852138018))
+```
+
 ```sh
 (env) $ python python_tests/lin_reg.py
 52.71177673339844
 205.71873474121094
-src/tcmalloc.cc:304] Attempt to free invalid pointer 0x257e560
-Segmentation fault (core dumped)
+```
+
+2. Logistic Regression
+
+[Script](./python_tests/log_reg.py):
+
+```py
+from ml_hpx import LogisticRegression
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+import sklearn.linear_model
+from sklearn.preprocessing import StandardScaler
+
+df = pd.read_csv('./datasets/logistic_regression_dataset_10000.csv')
+
+X = df[['x']]
+y = df['class']
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+train = list(zip(X_train.flatten().tolist(), y_train))
+
+log_reg = LogisticRegression(5000, 0.005, 123)
+print(f"Train accuracy: {log_reg.train(train)}")
+
+y_pred = log_reg.predict(X_test.flatten().tolist())
+
+# Evaluate the model
+print("Test accuracy:", accuracy_score(y_test, y_pred))
+
+# Create and fit the logistic regression model
+model = sklearn.linear_model.LogisticRegression()
+model.fit(X_train, y_train)
+
+# Predict on the test set
+y_pred = model.predict(X_test)
+
+# Evaluate the model
+print("Accuracy:", accuracy_score(y_test, y_pred))
+```
+
+```sh
 (env) $ python python_tests/log_reg.py
-0.977400004863739
-src/tcmalloc.cc:304] Attempt to free invalid pointer 0x1db1dd20
-Segmentation fault (core dumped)
+Train accuracy: 0.977875
+Test accuracy: 0.9805 # ml-hpx
+Accuracy: 0.981 # scikit-learn
 ```
 
 ## Misc. Benchmarks
@@ -115,6 +181,8 @@ Accuracy: 0.98
 ```
 
 ## To-Do
-1. Maybe adding HPX as a submodule (for easy installation later on)
-2. Adding support for more ML algorithms
-3. Benchmarking against scikit-learn maybe
+* Multi-feature support for Logistic and Linear
+1. DecisionTrees
+2. Random Forests
+3. Boosting ??
+4. NN ??

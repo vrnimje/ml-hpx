@@ -20,7 +20,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::vector<std::pair<float, float>> D;
+    std::vector<std::pair<double, double>> D;
     std::string line;
 
     std::getline(in, line); // Skip column names
@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
     while (std::getline(in, line)) {
         std::stringstream L(line);
         std::string data;
-        std::pair<float, float> p;
+        std::pair<double, double> p;
 
         while(getline(L, data, ',')) {
             l++;
@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
 
     std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 
-    float loss = logistic_regressor.train(D);
+    double loss = logistic_regressor.train(D);
 
     std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
 

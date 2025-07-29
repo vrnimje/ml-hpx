@@ -20,7 +20,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::vector<std::pair<float, float>> D;
+    std::vector<std::pair<double, double>> D;
     std::string line;
 
     std::getline(in, line); // Skip column names
@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
     while (std::getline(in, line)) {
         std::stringstream L(line);
         std::string data;
-        std::pair<float, float> p;
+        std::pair<double, double> p;
 
         while(getline(L, data, ',')) {
             l++;
@@ -53,14 +53,14 @@ int main(int argc, char* argv[]) {
     auto split_iter = D.begin();
     std::advance(split_iter, n_train);
 
-    std::vector<std::pair<float, int>> D_train(D.begin(), split_iter);
-    std::vector<std::pair<float, int>> D_test(split_iter, D.end());
+    std::vector<std::pair<double, int>> D_train(D.begin(), split_iter);
+    std::vector<std::pair<double, int>> D_test(split_iter, D.end());
 
     LogisticRegression logistic_regressor = LogisticRegression(4000, 0.001);
 
     std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 
-    float train_acc = logistic_regressor.train(D_train);
+    double train_acc = logistic_regressor.train(D_train);
 
     std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
 
@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
         if (p == D_test[i].second) correct++;
     }
 
-    std::cout << "Test Accuracy:" << ((float)correct / n_test) << std::endl;
+    std::cout << "Test Accuracy:" << ((double)correct / n_test) << std::endl;
 
     return 0;
 }

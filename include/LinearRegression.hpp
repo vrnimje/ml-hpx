@@ -9,15 +9,15 @@
 
 class LinearRegression {
 private:
-    float W, B; // Weights
-    float alpha; // Learning rate
+    double W, B; // Weights
+    double alpha; // Learning rate
     int epochs; // Epochs
 
     std::mt19937 gen;
-    std::uniform_real_distribution<float> distribution;
+    std::uniform_real_distribution<double> distribution;
 
 public:
-    LinearRegression(int num_epochs = 5000, float learning_rate = 1e-3, unsigned int seed = 0)
+    LinearRegression(int num_epochs = 5000, double learning_rate = 1e-3, unsigned int seed = 0)
         :   gen(seed),                  // 1. Seed the generator using the device
             distribution(-1.0f, 1.0f),  // 2. Initialize the distribution range
             W(distribution(gen)),       // 3. Initialize W with a random value
@@ -27,21 +27,21 @@ public:
     {}
 
     // Linear equation: Y = WX + B
-    float f(float X) const {
+    double f(double X) const {
         return (W*X + B);
     }
 
-    float predict(float X) const {
+    double predict(double X) const {
         return f(X);
     }
 
-    std::vector<float> predict(std::vector<float> X) const {
-        std::vector<float> Y;
+    std::vector<double> predict(std::vector<double> X) const {
+        std::vector<double> Y;
         for (auto& x : X) {
             Y.push_back(f(x));
         }
         return Y;
     }
 
-    float train(std::vector<std::pair<float, float>> D);
+    double train(std::vector<std::pair<double, double>> D);
 };
