@@ -6,6 +6,7 @@
 
 #include "LinearRegression.hpp"
 #include "LogisticRegression.hpp"
+#include "KNearestNeighbours.hpp"
 
 namespace nb = nanobind;
 
@@ -65,9 +66,27 @@ NB_MODULE(_ml_hpx_impl, m) {
         .def("predict", nb::overload_cast<std::vector<double>>(&LogisticRegression::predict, nb::const_),
             "Predicts Y for a vector of X values.")
 
+        // Overloaded fit method bindings
         .def("fit", nb::overload_cast<std::vector<std::pair<double, int>>>(&LogisticRegression::fit),
             "Trains the model using the provided data D (vector of (input, target) pairs).")
-
         .def("fit", nb::overload_cast<std::vector<double>, std::vector<int>>(&LogisticRegression::fit),
             "Trains the model using the provided input X and target Y.");
+
+    nb::class_<KNearestNeighbours>(m, "KNearestNeighbours")
+        // Constructor binding
+        .def(nb::init<int>(),
+            "Initializes the KNearestNeighbours model.",
+            nb::arg("k") = 5
+        )
+
+        // Method bindings
+        .def("fit", nb::overload_cast<std::vector<std::tuple<double, double, int>>>(&KNearestNeighbours::fit),
+            "Fits the model using the provided data D (vector of (input, target) pairs).")
+        .def("fit", nb::overload_cast<std::vector<std::pair<double, double>>, std::vector<int>>(&KNearestNeighbours::fit),
+            "Fits the model using the X (input) and Y (pairs).")
+
+        .def("predict", nb::overload_cast<std::pair<double, double>>(&KNearestNeighbours::predict),
+            "Predicts class Y for a X value.")
+        .def("predict", nb::overload_cast<std::vector<std::pair<double, double>>>(&KNearestNeighbours::predict),
+            "Predicts classes Y for a vector of X values.");
 }

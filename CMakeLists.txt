@@ -37,7 +37,13 @@ find_package(Python 3.10
 # Import nanobind through CMake's find_package mechanism
 find_package(nanobind CONFIG REQUIRED)
 
-nanobind_add_module(_ml_hpx_impl STABLE_ABI src/bind.cpp src/LinearRegression.cpp src/LogisticRegression.cpp)
+nanobind_add_module(_ml_hpx_impl
+    STABLE_ABI
+        src/bind.cpp
+        src/LinearRegression.cpp
+        src/LogisticRegression.cpp
+        src/KNearestNeighbours.cpp
+)
 
 target_include_directories(_ml_hpx_impl
     PUBLIC
