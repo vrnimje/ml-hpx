@@ -41,8 +41,11 @@ NB_MODULE(_ml_hpx_impl, m) {
         .def("predict", nb::overload_cast<std::vector<double>>(&LinearRegression::predict, nb::const_),
             "Predicts Y for a vector of X values.")
 
-        .def("train", &LinearRegression::train,
-            "Trains the model using the provided data D (vector of (input, target) pairs).");
+        .def("fit", nb::overload_cast<std::vector<std::pair<double, double>>>(&LinearRegression::fit),
+            "Trains the model using the provided data D (vector of (input, target) pairs).")
+
+        .def("fit", nb::overload_cast<std::vector<double>, std::vector<double>>(&LinearRegression::fit),
+            "Trains the model using the provided input X and target Y.");
 
     nb::class_<LogisticRegression>(m, "LogisticRegression")
         // Constructor binding
@@ -62,6 +65,9 @@ NB_MODULE(_ml_hpx_impl, m) {
         .def("predict", nb::overload_cast<std::vector<double>>(&LogisticRegression::predict, nb::const_),
             "Predicts Y for a vector of X values.")
 
-        .def("train", &LogisticRegression::train,
-            "Trains the model using the provided data D (vector of (input, target) pairs).");
+        .def("fit", nb::overload_cast<std::vector<std::pair<double, int>>>(&LogisticRegression::fit),
+            "Trains the model using the provided data D (vector of (input, target) pairs).")
+
+        .def("fit", nb::overload_cast<std::vector<double>, std::vector<int>>(&LogisticRegression::fit),
+            "Trains the model using the provided input X and target Y.");
 }

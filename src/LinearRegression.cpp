@@ -1,6 +1,7 @@
 #include "LinearRegression.hpp"
+#include <utility>
 
-double LinearRegression::train(std::vector<std::pair<double, double>> D) {
+double LinearRegression::fit(std::vector<std::pair<double, double>> D) {
     size_t n = D.size();
 
     for (int k=0; k<epochs; k++) {
@@ -50,4 +51,14 @@ double LinearRegression::train(std::vector<std::pair<double, double>> D) {
     loss /= (2 * n);
 
     return loss;
+}
+
+double LinearRegression::fit(std::vector<double> X, std::vector<double> Y) {
+    std::vector<std::pair<double, double>> D;
+
+    for (size_t i = 0; i < X.size(); i++) {
+        D.push_back(std::make_pair(X[i], Y[i]));
+    }
+
+    return LinearRegression::fit(D);
 }

@@ -20,7 +20,7 @@ X_test = scaler.transform(X_test)
 train = list(zip(X_train.flatten().tolist(), y_train))
 
 log_reg = LogisticRegression(5000, 0.005, 123)
-print(f"Train accuracy: {log_reg.train(train)}")
+print(f"Train accuracy: {log_reg.fit(X_train.flatten().tolist(), y_train.values)}")
 
 y_pred = log_reg.predict(X_test.flatten().tolist())
 

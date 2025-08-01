@@ -28,47 +28,14 @@ if (NOT SKBUILD)
   after editing C++ files.")
 endif()
 
-# Nanobind setup
-if (CMAKE_VERSION VERSION_LESS 3.29)
-    set(DEV_MODULE Development)
-else()
-    set(DEV_MODULE Development.Module)
-endif()
-
-find_package(Python 3.10 COMPONENTS Interpreter ${DEV_MODULE} REQUIRED)
-
-if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
-endif()
-
-# As nanobind is used as a git submodule
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/nanobind)
-
-# Linear Regression
-add_library(linear_regression src/LinearRegression.cpp)
-
-target_include_directories(linear_regression
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+# Try to import all Python components potentially needed by nanobind
+find_package(Python 3.10
+  REQUIRED COMPONENTS Interpreter Development.Module
+  OPTIONAL_COMPONENTS Development.SABIModule
 )
 
-target_link_libraries(linear_regression
-    PUBLIC HPX::hpx
-)
-
-# Logistic Regression
-add_library(logistic_regression src/LogisticRegression.cpp)
-
-target_include_directories(logistic_regression
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-
-target_link_libraries(logistic_regression
-    PUBLIC
-        HPX::hpx
-)
+# Import nanobind through CMake's find_package mechanism
+find_package(nanobind CONFIG REQUIRED)
 
 nanobind_add_module(_ml_hpx_impl STABLE_ABI src/bind.cpp src/LinearRegression.cpp src/LogisticRegression.cpp)
 
@@ -83,16 +50,6 @@ target_link_libraries(_ml_hpx_impl
 )
 
 install(TARGETS _ml_hpx_impl LIBRARY DESTINATION ml_hpx)
-
-add_executable(linear_reg_test test/linear_reg_test.cpp)
-target_link_libraries(linear_reg_test
-    linear_regression
-)
-
-add_executable(log_reg_test test/log_reg_test.cpp)
-target_link_libraries(log_reg_test
-    logistic_regression
-)
 
 add_executable(linear_reg_benchmark bench/linear_reg.cpp)
 target_link_libraries(linear_reg_benchmark

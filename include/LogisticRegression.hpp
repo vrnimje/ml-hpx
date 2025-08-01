@@ -44,5 +44,7 @@ public:
         return Y;
     }
 
-    double train(std::vector<std::pair<double, int>> D);
+    double fit(std::vector<std::pair<double, int>> D);
+
+    double fit(std::vector<double> X, std::vector<int> Y);
 };

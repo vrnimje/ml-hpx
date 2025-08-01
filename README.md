@@ -7,8 +7,9 @@ Pre-requisites: [Installing HPX](https://hpx-docs.stellar-group.org/latest/html/
 
 ```sh
 cd build
-git clone --recursive https://github.com/vrnimje/ml-hpx.git
+git clone https://github.com/vrnimje/ml-hpx.git
 
+cd ml-hpx
 pip install .
 ```
 
@@ -30,7 +31,7 @@ data = list(zip(X, Y))
 
 lin_reg = LinearRegression(5000, 1e-5)
 
-print(lin_reg.train(data))
+print(lin_reg.fit(data))
 print(lin_reg.predict(79.8690852138018))
 ```
 
@@ -67,7 +68,7 @@ X_test = scaler.transform(X_test)
 train = list(zip(X_train.flatten().tolist(), y_train))
 
 log_reg = LogisticRegression(5000, 0.005, 123)
-print(f"Train accuracy: {log_reg.train(train)}")
+print(f"Train accuracy: {log_reg.fit(train)}")
 
 y_pred = log_reg.predict(X_test.flatten().tolist())
 
@@ -181,7 +182,6 @@ Accuracy: 0.98
 ```
 
 ## To-Do
-* Multi-feature support for Logistic and Linear
 1. DecisionTrees
 2. Random Forests
 3. Boosting ??

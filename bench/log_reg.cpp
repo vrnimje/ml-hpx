@@ -14,8 +14,6 @@
 #include <utility>
 #include <vector>
 #include <fstream>
-#include <algorithm>
-#include <ranges>
 #include <execution>
 
 // Linear equation: Y = 1 / (1 + exp(-Wx - B))

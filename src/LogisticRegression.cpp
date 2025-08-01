@@ -1,6 +1,6 @@
 #include "LogisticRegression.hpp"
 
-double LogisticRegression::train(std::vector<std::pair<double, int>> D) {
+double LogisticRegression::fit(std::vector<std::pair<double, int>> D) {
     size_t n = D.size();
 
     for (int k=0; k<epochs; k++) {
@@ -50,4 +50,14 @@ double LogisticRegression::train(std::vector<std::pair<double, int>> D) {
     train_accuracy /= n;
 
     return train_accuracy;
+}
+
+double LogisticRegression::fit(std::vector<double> X, std::vector<int> Y) {
+    std::vector<std::pair<double, int>> D;
+
+    for (size_t i = 0; i < X.size(); i++) {
+        D.push_back(std::make_pair(X[i], Y[i]));
+    }
+
+    return LogisticRegression::fit(D);
 }
