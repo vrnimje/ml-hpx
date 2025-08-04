@@ -2,35 +2,42 @@ from ml_hpx import LogisticRegression
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-import sklearn.linear_model
+from sklearn.linear_model import LogisticRegression as SklearnLogReg
 from sklearn.preprocessing import StandardScaler
 
+# Load data
 df = pd.read_csv('./datasets/logistic_regression_dataset_10000.csv')
-
 X = df[['x']]
 y = df['class']
 
 # Split the data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
+# Standardize features
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
+X_train_flat = X_train.flatten().tolist()
+X_test_flat = X_test.flatten().tolist()
+y_train_vals = y_train.values
+
+# ML-HPX Logistic Regression
 log_reg = LogisticRegression(5000, 0.005, 123)
-print(f"Train accuracy: {log_reg.fit(X_train.flatten().tolist(), y_train.values)}")
 
-y_pred = log_reg.predict(X_test.flatten().tolist())
+log_reg.fit(X_train_flat, y_train_vals)
+y_pred_hpx = log_reg.predict(X_test_flat)
 
-# Evaluate the model
-print("Test accuracy:", accuracy_score(y_test, y_pred))
+hpx_accuracy = accuracy_score(y_test, y_pred_hpx)
 
-# Create and fit the logistic regression model
-model = sklearn.linear_model.LogisticRegression()
-model.fit(X_train, y_train)
+print(f"ML-HPX Logistic Regression accuracy: {hpx_accuracy:.4f}")
 
-# Predict on the test set
-y_pred = model.predict(X_test)
+# sklearn Logistic Regression
+sklearn_model = SklearnLogReg()
 
-# Evaluate the model
-print("Accuracy:", accuracy_score(y_test, y_pred))
+sklearn_model.fit(X_train, y_train)
+y_pred_sklearn = sklearn_model.predict(X_test)
+
+sklearn_accuracy = accuracy_score(y_test, y_pred_sklearn)
+
+print(f"Sklearn Logistic Regression accuracy: {sklearn_accuracy:.4f}")

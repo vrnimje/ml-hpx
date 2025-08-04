@@ -15,8 +15,8 @@ private:
     std::vector<std::tuple<double, double, int>> D; // Seen data points
     int k;
 
-    double euclidean_dist(const std::pair<double, double>& a, const std::pair<double, double>& b) {
-        return std::sqrt(std::pow(a.first - b.first, 2) + std::pow(a.second - b.second, 2));
+    inline double euclidean_dist_sq(const std::pair<double, double>& a, const std::pair<double, double>& b) {
+        return std::pow(a.first - b.first, 2) + std::pow(a.second - b.second, 2);
     }
 
 public:

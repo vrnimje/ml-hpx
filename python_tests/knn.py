@@ -5,6 +5,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
 
+# Load dataset
 df = pd.read_csv('./datasets/classified_points_dataset.csv')
 
 X = df[['x', 'y']]
@@ -13,22 +14,32 @@ y = df['class']
 # Split the data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
+# Standardize features
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
-knn = KNearestNeighbours(k=3)
+# Convert data for HPX version
+X_train_list = X_train.tolist()
+X_test_list = X_test.tolist()
+y_train_values = y_train.values
 
-knn.fit(X_train.tolist(), y_train.values)
+### ML-HPX ###
+knn = KNearestNeighbours(k=5)
 
-y_pred = knn.predict(X_test.tolist())
+knn.fit(X_train_list, y_train_values)
+y_pred_hpx = knn.predict(X_test_list)
 
-print("ML-HPX accuracy", accuracy_score(y_pred, y_test))
+hpx_accuracy = accuracy_score(y_pred_hpx, y_test)
 
-knn_sklearn = KNeighborsClassifier(n_neighbors=3)
+print(f"ML-HPX accuracy: {hpx_accuracy:.4f}")
+
+### scikit-learn ###
+knn_sklearn = KNeighborsClassifier(n_neighbors=5)
 
 knn_sklearn.fit(X_train, y_train)
+y_pred_sklearn = knn_sklearn.predict(X_test)
 
-y_pred = knn.predict(X_test)
+sklearn_accuracy = accuracy_score(y_pred_sklearn, y_test)
 
-print("Sklearn accuracy", accuracy_score(y_pred, y_test))
+print(f"Sklearn accuracy: {sklearn_accuracy:.4f}")

@@ -1,44 +1,42 @@
 #include "KNearestNeighbours.hpp"
 
 int KNearestNeighbours::predict(std::pair<double, double> X) {
-    std::vector<int> neigh_labels(k);
+    std::vector<std::pair<double, int>> dist_labels(D.size());
 
     hpx::run_as_hpx_thread([&]{
-        hpx::sort(hpx::execution::par, D.begin(), D.end(),
-            [&](const std::tuple<double, double, int>& a, const std::tuple<double, double, int>& b) {
-                return euclidean_dist(X, std::make_pair(std::get<0>(a), std::get<1>(a))) <
-                       euclidean_dist(X, std::make_pair(std::get<0>(b), std::get<1>(b)));
+        // Compute all distances in parallel
+        hpx::transform(hpx::execution::par, D.begin(), D.end(), dist_labels.begin(),
+            [&](const std::tuple<double, double, int>& d) {
+                double dist_sq = euclidean_dist_sq(X, std::make_pair(std::get<0>(d), std::get<1>(d)));
+                return std::make_pair(dist_sq, std::get<2>(d));
             }
         );
 
-        hpx::transform(hpx::execution::par, D.begin(), D.begin() + k, neigh_labels.begin(),
-            [&](const std::tuple<double, double, int>& d) {
-                return std::get<2>(d);
-            }
-        );
+        // Get k-nearest points
+        hpx::nth_element(dist_labels.begin(), dist_labels.begin() + k, dist_labels.end());
     });
 
+    // Count labels among k nearest neighbors
     std::unordered_map<int, int> label_counts;
-    for (int label : neigh_labels) {
-        label_counts[label]++;
+    label_counts.reserve(k); // Reserve space for efficiency
+
+    for (int i = 0; i < k; ++i) {
+        ++label_counts[dist_labels[i].second];
     }
 
-    int max_count = 0;
-    int maj_label = 0;
-    for (const auto& pair : label_counts) {
-        if (pair.second > max_count) {
-            max_count = pair.second;
-            maj_label = pair.first;
-        }
-    }
-
-    return maj_label;
+    // Find majority label
+    return std::max_element(label_counts.begin(), label_counts.end(),
+        [](const auto& a, const auto& b) { return a.second < b.second; })->first;
 }
 
 std::vector<int> KNearestNeighbours::predict(std::vector<std::pair<double, double>> X) {
-    std::vector<int> pred(X.size());
-    for (int i=0; i<X.size(); i++) {
-        pred[i] = KNearestNeighbours::predict(X[i]);
-    }
-    return pred;
+    std::vector<int> predictions(X.size());
+
+    std::transform(X.begin(), X.end(), predictions.begin(),
+        [this](const std::pair<double, double>& point) {
+            return this->predict(point);
+        }
+    );
+
+    return predictions;
 }
