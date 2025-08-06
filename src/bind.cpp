@@ -7,6 +7,7 @@
 #include "LinearRegression.hpp"
 #include "LogisticRegression.hpp"
 #include "KNearestNeighbours.hpp"
+#include "KMeansClustering.hpp"
 
 namespace nb = nanobind;
 
@@ -30,7 +31,8 @@ NB_MODULE(_ml_hpx_impl, m) {
             "Initializes the LogisticRegression model.",
             nb::arg("num_epochs") = 5000,
             nb::arg("learning_rate") = 1e-3,
-            nb::arg("seed") = 0) // default seed argument
+            nb::arg("seed") = 0
+        )
 
         // Method bindings
         .def("f", &LinearRegression::f,
@@ -54,7 +56,8 @@ NB_MODULE(_ml_hpx_impl, m) {
             "Initializes the LinearRegression model.",
             nb::arg("num_epochs") = 5000,
             nb::arg("learning_rate") = 1e-3,
-            nb::arg("seed") = 0) // default seed argument
+            nb::arg("seed") = 0
+        )
 
         // Method bindings
         .def("f", &LogisticRegression::f,
@@ -89,4 +92,17 @@ NB_MODULE(_ml_hpx_impl, m) {
             "Predicts class Y for a X value.")
         .def("predict", nb::overload_cast<std::vector<std::pair<double, double>>>(&KNearestNeighbours::predict),
             "Predicts classes Y for a vector of X values.");
+
+    nb::class_<KMeansClustering>(m, "KMeansClustering")
+        // Constructor binding
+        .def(nb::init<int, int, unsigned int>(),
+            "Initializes the KMeansClustering model.",
+            nb::arg("k") = 8,
+            nb::arg("max_iter") = 300,
+            nb::arg("seed") = 0
+        )
+
+        // Method binding
+        .def("fit", nb::overload_cast<std::vector<std::pair<double, double>>>(&KMeansClustering::fit),
+            "Fits the model using the provided data D (vector of double pairs).");
 }

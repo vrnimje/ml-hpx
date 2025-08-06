@@ -37,8 +37,10 @@ print(lin_reg.predict(79.8690852138018))
 
 ```sh
 (env) $ python python_tests/lin_reg.py
-52.71177673339844
-205.71873474121094
+ML-HPX Linear Regression MSE: 105.4234
+ML-HPX Linear Regression Time: 0.0534 seconds
+Sklearn Linear Regression MSE: 99.7971
+Sklearn Linear Regression Time: 0.0054 seconds
 ```
 
 2. Logistic Regression
@@ -88,12 +90,13 @@ print("Accuracy:", accuracy_score(y_test, y_pred))
 
 ```sh
 (env) $ python python_tests/log_reg.py
-Train accuracy: 0.977875
-Test accuracy: 0.9805 # ml-hpx
-Accuracy: 0.981 # scikit-learn
+ML-HPX Logistic Regression accuracy: 0.9770
+ML-HPX Logistic Regression time: 0.2139 seconds
+Sklearn Logistic Regression accuracy: 0.9765
+Sklearn Logistic Regression time: 0.0224 seconds
 ```
 
-2. K-Nearest Neighbours classifier
+3. K-Nearest Neighbours classifier
 
 [Script](./python_tests/knn.py):
 
@@ -135,11 +138,65 @@ print("Sklearn accuracy", accuracy_score(y_pred, y_test))
 ```
 
 ```sh
-(env) $ $ python python_tests/knn.py
-ML-HPX accuracy 0.9995
-Sklearn accuracy 0.9995
+(env) $ python python_tests/knn.py
+ML-HPX accuracy: 1.0000
+ML-HPX time: 0.1780 seconds
+Sklearn accuracy: 1.0000
+Sklearn time: 0.0090 seconds
 ```
 
+4. k-Means Clustering
+
+[Script](./python_tests/kmeans.py):
+
+```py
+from ml_hpx import KMeansClustering
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+import pandas as pd
+from time import perf_counter
+
+# Load dataset
+df = pd.read_csv('./datasets/kmeans_test_dataset.csv')
+
+X = df[['x', 'y']]
+
+# Standardize features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+### scikit-learn KMeans ###
+k = 5
+kmeans = KMeans(n_clusters=k, random_state=42)
+
+start_kmeans = perf_counter()
+kmeans.fit(X_scaled)
+end_kmeans = perf_counter()
+
+# Add cluster labels to DataFrame
+df['cluster'] = kmeans.labels_
+
+# Print performance
+print(f"Sklearn KMeans time: {end_kmeans - start_kmeans:.4f} seconds")
+print(f"Inertia: {kmeans.inertia_:.4f}")
+
+kmeans_hpx = KMeansClustering(k=5)
+
+start_hpx = perf_counter()
+sse = kmeans_hpx.fit(X_scaled.tolist())
+end_hpx = perf_counter()
+
+print(f"ML-HPX KMeans time: {end_hpx - start_hpx:.4f} seconds")
+print(f"Inertia: {sse:.4f}")
+```
+
+```sh
+$ python python_tests/kmeans.py
+Sklearn KMeans time: 0.0140 seconds
+Inertia: 543.3955
+ML-HPX KMeans time: 0.0085 seconds
+Inertia: 543.3952
+```
 
 ## Misc. Benchmarks
 
@@ -228,7 +285,3 @@ And the accuracy is comparable to [scikit-learn](./log_reg.py)
 $ python3 log_reg.py
 Accuracy: 0.98
 ```
-
-## To-Do
-1. Naive Bayes Classifer
-2. K-Means clustering

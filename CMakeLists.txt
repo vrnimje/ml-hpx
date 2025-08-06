@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(ml-hpx CXX)
 find_package(HPX REQUIRED)
@@ -43,6 +44,7 @@ nanobind_add_module(_ml_hpx_impl
         src/LinearRegression.cpp
         src/LogisticRegression.cpp
         src/KNearestNeighbours.cpp
+        src/KMeansClustering.cpp
 )
 
 target_include_directories(_ml_hpx_impl
