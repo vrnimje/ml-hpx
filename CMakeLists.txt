@@ -45,6 +45,7 @@ nanobind_add_module(_ml_hpx_impl
         src/LogisticRegression.cpp
         src/KNearestNeighbours.cpp
         src/KMeansClustering.cpp
+        src/Perceptron.cpp
 )
 
 target_include_directories(_ml_hpx_impl

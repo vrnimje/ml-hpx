@@ -19,7 +19,7 @@ private:
 public:
     LinearRegression(int num_epochs = 5000, double learning_rate = 1e-3, unsigned int seed = 0)
         :   gen(seed),                  // 1. Seed the generator using the device
-            distribution(-1.0f, 1.0f),  // 2. Initialize the distribution range
+            distribution(-1.0, 1.0),    // 2. Initialize the distribution range
             W(distribution(gen)),       // 3. Initialize W with a random value
             B(distribution(gen)),       // 4. Initialize B with a random value (fixed)
             alpha(learning_rate),

@@ -8,6 +8,7 @@
 #include "LogisticRegression.hpp"
 #include "KNearestNeighbours.hpp"
 #include "KMeansClustering.hpp"
+#include "Perceptron.hpp"
 
 namespace nb = nanobind;
 
@@ -53,7 +54,7 @@ NB_MODULE(_ml_hpx_impl, m) {
     nb::class_<LogisticRegression>(m, "LogisticRegression")
         // Constructor binding
         .def(nb::init<int, double, unsigned int>(),
-            "Initializes the LinearRegression model.",
+            "Initializes the LogisitcRegression classifier model.",
             nb::arg("num_epochs") = 5000,
             nb::arg("learning_rate") = 1e-3,
             nb::arg("seed") = 0
@@ -105,4 +106,24 @@ NB_MODULE(_ml_hpx_impl, m) {
         // Method binding
         .def("fit", nb::overload_cast<std::vector<std::pair<double, double>>>(&KMeansClustering::fit),
             "Fits the model using the provided data D (vector of double pairs).");
+
+    nb::class_<Perceptron>(m, "Perceptron")
+        // Constructor binding
+        .def(nb::init<double, unsigned int>(),
+            "Initializes the Perceptron model.",
+            nb::arg("learning_rate") = 1e-3,
+            nb::arg("seed") = 0
+        )
+
+        // Overloaded predict method bindings
+        .def("predict", nb::overload_cast<double>(&Perceptron::predict, nb::const_),
+            "Predicts Y for a single X value.")
+        .def("predict", nb::overload_cast<std::vector<double>>(&Perceptron::predict, nb::const_),
+            "Predicts Y for a vector of X values.")
+
+        // Overloaded fit method bindings
+        .def("fit", nb::overload_cast<std::vector<std::pair<double, int>>>(&Perceptron::fit),
+            "Trains the model using the provided data D (vector of (input, target) pairs).")
+        .def("fit", nb::overload_cast<std::vector<double>, std::vector<int>>(&Perceptron::fit),
+            "Trains the model using the provided input X and target Y.");
 }
