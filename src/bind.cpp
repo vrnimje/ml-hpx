@@ -116,14 +116,14 @@ NB_MODULE(_ml_hpx_impl, m) {
         )
 
         // Overloaded predict method bindings
-        .def("predict", nb::overload_cast<double>(&Perceptron::predict, nb::const_),
-            "Predicts Y for a single X value.")
-        .def("predict", nb::overload_cast<std::vector<double>>(&Perceptron::predict, nb::const_),
-            "Predicts Y for a vector of X values.")
+        .def("predict", nb::overload_cast<std::pair<double, double>>(&Perceptron::predict, nb::const_),
+            "Predicts Y for a point X.")
+        .def("predict", nb::overload_cast<std::vector<std::pair<double, double>>>(&Perceptron::predict, nb::const_),
+            "Predicts Y for a vector of X points.")
 
         // Overloaded fit method bindings
-        .def("fit", nb::overload_cast<std::vector<std::pair<double, int>>>(&Perceptron::fit),
+        .def("fit", nb::overload_cast<std::vector<std::tuple<double, double, int>>>(&Perceptron::fit),
             "Trains the model using the provided data D (vector of (input, target) pairs).")
-        .def("fit", nb::overload_cast<std::vector<double>, std::vector<int>>(&Perceptron::fit),
+        .def("fit", nb::overload_cast<std::vector<std::pair<double, double>>, std::vector<int>>(&Perceptron::fit),
             "Trains the model using the provided input X and target Y.");
 }

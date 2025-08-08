@@ -7,9 +7,9 @@ from sklearn.preprocessing import StandardScaler
 from time import perf_counter
 
 # Load data
-df = pd.read_csv('./datasets/logistic_regression_dataset_10000.csv')
-X = df[['x']]
-y = df['class']
+df = pd.read_csv('./datasets/perceptron_test_dataset.csv')
+X = df[['x', 'y']]
+y = df['label']
 
 # Split the data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
@@ -19,24 +19,24 @@ scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
-X_train_flat = X_train.flatten().tolist()
-X_test_flat = X_test.flatten().tolist()
+X_train_flat = X_train.tolist()
+X_test_flat = X_test.tolist()
 y_train_vals = y_train.values
 
-# ML-HPX Logistic Regression
-perc = Perceptron()
+# ML-HPX Perceptron
+perceptron = Perceptron()
 
 start_hpx = perf_counter()
-perc.fit(X_train_flat, y_train_vals)
-y_pred_hpx = perc.predict(X_test_flat)
+perceptron.fit(X_train_flat, y_train_vals)
+y_pred_hpx = perceptron.predict(X_test_flat)
 end_hpx = perf_counter()
 
 hpx_accuracy = accuracy_score(y_test, y_pred_hpx)
 
-print(f"ML-HPX Logistic Regression accuracy: {hpx_accuracy:.4f}")
-print(f"ML-HPX Logistic Regression time: {end_hpx - start_hpx:.4f} seconds")
+print(f"ML-HPX Perceptron accuracy: {hpx_accuracy:.4f}")
+print(f"ML-HPX Perceptron time: {end_hpx - start_hpx:.4f} seconds")
 
-# sklearn Logistic Regression
+# sklearn Perceptron
 sklearn_model = SklearnPerceptron()
 
 start_sklearn = perf_counter()
@@ -46,5 +46,5 @@ end_sklearn = perf_counter()
 
 sklearn_accuracy = accuracy_score(y_test, y_pred_sklearn)
 
-print(f"Sklearn Logistic Regression accuracy: {sklearn_accuracy:.4f}")
-print(f"Sklearn Logistic Regression time: {end_sklearn - start_sklearn:.4f} seconds")
+print(f"Sklearn Perceptron accuracy: {sklearn_accuracy:.4f}")
+print(f"Sklearn Perceptron time: {end_sklearn - start_sklearn:.4f} seconds")

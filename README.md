@@ -257,10 +257,10 @@ print(f"Sklearn Logistic Regression time: {end_sklearn - start_sklearn:.4f} seco
 
 ```sh
 (env) $ python python_tests/perceptron.py
-ML-HPX Logistic Regression accuracy: 0.9775
-ML-HPX Logistic Regression time: 0.0009 seconds
-Sklearn Logistic Regression accuracy: 0.9775
-Sklearn Logistic Regression time: 0.0023 seconds
+ML-HPX Perceptron accuracy: 1.0000
+ML-HPX Perceptron time: 0.0016 seconds
+Sklearn Perceptron accuracy: 0.9995
+Sklearn Perceptron time: 0.0028 seconds
 ```
 
 ## Misc. Benchmarks

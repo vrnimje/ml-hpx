@@ -1,14 +1,15 @@
 #include "Perceptron.hpp"
 
-double Perceptron::fit(std::vector<std::pair<double, int>> D) {
+double Perceptron::fit(std::vector<std::tuple<double, double, int>> D) {
     size_t n = D.size();
 
     hpx::for_each(
         D.begin(),
         D.end(),
         [&](auto a) {
-            double diff = (predict(a.first) - a.second);
-            W -= alpha * diff * a.first;
+            double diff = (predict(std::make_pair(std::get<0>(a), std::get<1>(a))) - std::get<2>(a));
+            W.first -= alpha * diff * std::get<0>(a);
+            W.second -= alpha * diff * std::get<1>(a);
             B -= alpha * diff;
         }
     );
@@ -19,7 +20,7 @@ double Perceptron::fit(std::vector<std::pair<double, int>> D) {
         0.0,
         std::plus<int>(),
         [&](auto a) {
-            return (predict(a.first) == a.second) ? 1 : 0;
+            return (predict(std::make_pair(std::get<0>(a), std::get<1>(a))) == std::get<2>(a)) ? 1 : 0;
         }
     );
 
@@ -28,11 +29,11 @@ double Perceptron::fit(std::vector<std::pair<double, int>> D) {
     return train_accuracy;
 }
 
-double Perceptron::fit(std::vector<double> X, std::vector<int> Y) {
-    std::vector<std::pair<double, int>> D;
+double Perceptron::fit(std::vector<std::pair<double, double>> X, std::vector<int> Y) {
+    std::vector<std::tuple<double, double, int>> D;
 
     for (size_t i = 0; i < X.size(); i++) {
-        D.push_back(std::make_pair(X[i], Y[i]));
+        D.push_back(std::make_tuple(X[i].first, X[i].second, Y[i]));
     }
 
     return Perceptron::fit(D);
