@@ -46,6 +46,7 @@ nanobind_add_module(_ml_hpx_impl
         src/KNearestNeighbours.cpp
         src/KMeansClustering.cpp
         src/Perceptron.cpp
+        src/SVC.cpp
 )
 
 target_include_directories(_ml_hpx_impl

@@ -9,6 +9,7 @@
 #include "KNearestNeighbours.hpp"
 #include "KMeansClustering.hpp"
 #include "Perceptron.hpp"
+#include "SVC.hpp"
 
 namespace nb = nanobind;
 
@@ -125,5 +126,26 @@ NB_MODULE(_ml_hpx_impl, m) {
         .def("fit", nb::overload_cast<std::vector<std::tuple<double, double, int>>>(&Perceptron::fit),
             "Trains the model using the provided data D (vector of (input, target) pairs).")
         .def("fit", nb::overload_cast<std::vector<std::pair<double, double>>, std::vector<int>>(&Perceptron::fit),
+            "Trains the model using the provided input X and target Y.");
+
+    nb::class_<SVC>(m, "SVC")
+        // Constructor binding
+        .def(nb::init<int, double, unsigned int>(),
+            "Initializes the SVC model.",
+            nb::arg("max_iter") = 1000,
+            nb::arg("learning_rate") = 1e-3,
+            nb::arg("seed") = 0
+        )
+
+        // Overloaded predict method bindings
+        .def("predict", nb::overload_cast<std::pair<double, double>>(&SVC::predict, nb::const_),
+            "Predicts Y for a point X.")
+        .def("predict", nb::overload_cast<std::vector<std::pair<double, double>>>(&SVC::predict, nb::const_),
+            "Predicts Y for a vector of X points.")
+
+        // Overloaded fit method bindings
+        .def("fit", nb::overload_cast<std::vector<std::tuple<double, double, int>>>(&SVC::fit),
+            "Trains the model using the provided data D (vector of (input, target) pairs).")
+        .def("fit", nb::overload_cast<std::vector<std::pair<double, double>>, std::vector<int>>(&SVC::fit),
             "Trains the model using the provided input X and target Y.");
 }
