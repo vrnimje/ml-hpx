@@ -22,26 +22,98 @@ pip install .
 ```py
 from ml_hpx import LinearRegression
 import pandas as pd
+from sklearn.linear_model import LinearRegression as SklearnLinearRegression
+from sklearn.metrics import mean_squared_error
+from time import perf_counter
 
+print("### Simple Linear Regression")
+# Load data
 df = pd.read_csv('./datasets/linear_regressor_dataset_10000.csv')
-X = df['x']
+X = df[['x']]
 Y = df['y']
 
-data = list(zip(X, Y))
+X_values = X.values
+Y_values = Y.values
 
+# ML-HPX Linear Regression
 lin_reg = LinearRegression(5000, 1e-5)
 
-print(lin_reg.fit(data))
-print(lin_reg.predict(79.8690852138018))
+start_hpx = perf_counter()
+hpx_mse = lin_reg.fit(X_values.tolist(), Y_values.tolist())
+
+y_pred_hpx = lin_reg.predict(X_values.tolist())
+
+end_hpx = perf_counter()
+
+print(f"ML-HPX Linear Regression MSE: {hpx_mse:.4f}")
+print(f"ML-HPX Linear Regression Time: {end_hpx - start_hpx:.4f} seconds")
+
+# sklearn Linear Regression
+sklearn_lin_reg = SklearnLinearRegression()
+
+start_sklearn = perf_counter()
+sklearn_lin_reg.fit(X_values, Y_values)
+y_pred_sklearn = sklearn_lin_reg.predict(X_values)
+
+sklearn_mse = mean_squared_error(Y_values, y_pred_sklearn)
+end_sklearn = perf_counter()
+
+print(f"Sklearn Linear Regression MSE: {sklearn_mse:.4f}")
+print(f"Sklearn Linear Regression Time: {end_sklearn - start_sklearn:.4f} seconds")
+
+print("\n### Multi-feature Linear Regression")
+
+# Load data
+df = pd.read_csv('./datasets/multi-feature-linear-regression.csv')
+
+# Use all feature columns
+X = df.drop(columns=['y'])
+Y = df['y']
+
+X_values = X.values
+Y_values = Y.values
+
+# ML-HPX Linear Regression
+# Here, 5000 could be the number of iterations, and 1e-5 the learning rate (depending on implementation)
+lin_reg = LinearRegression(5000, 1e-5)
+
+start_hpx = perf_counter()
+hpx_mse = lin_reg.fit(X_values.tolist(), Y_values.tolist())
+y_pred_hpx = lin_reg.predict(X_values.tolist())
+end_hpx = perf_counter()
+
+print(f"ML-HPX Linear Regression MSE: {hpx_mse:.4f}")
+print(f"ML-HPX Linear Regression Time: {end_hpx - start_hpx:.4f} seconds")
+
+# sklearn Linear Regression
+sklearn_lin_reg = SklearnLinearRegression()
+
+start_sklearn = perf_counter()
+sklearn_lin_reg.fit(X_values, Y_values)
+y_pred_sklearn = sklearn_lin_reg.predict(X_values)
+sklearn_mse = mean_squared_error(Y_values, y_pred_sklearn)
+end_sklearn = perf_counter()
+
+print(f"Sklearn Linear Regression MSE: {sklearn_mse:.4f}")
+print(f"Sklearn Linear Regression Time: {end_sklearn - start_sklearn:.4f} seconds")
 ```
 
 ```sh
 $ python python_tests/lin_reg.py
-ML-HPX Linear Regression MSE: 105.4234
-ML-HPX Linear Regression Time: 0.0534 seconds
+### Simple Linear Regression
+ML-HPX Linear Regression MSE: 51.9648
+ML-HPX Linear Regression Time: 1.8472 seconds
 Sklearn Linear Regression MSE: 99.7971
-Sklearn Linear Regression Time: 0.0054 seconds
+Sklearn Linear Regression Time: 0.0022 seconds
+
+### Multi-feature Linear Regression
+ML-HPX Linear Regression MSE: 15.8709
+ML-HPX Linear Regression Time: 1.2715 seconds
+Sklearn Linear Regression MSE: 25.0206
+Sklearn Linear Regression Time: 0.0029 seconds
 ```
+
+As `scikit-learn` uses a closed-form solution to solve the linear regression , while `ml-hpx` uses an iterative optimization algorithm, hence, we see these large performance differences.
 
 2. Logistic Regression
 
