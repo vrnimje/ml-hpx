@@ -8,43 +8,46 @@
 #include <random>
 #include <vector>
 
+using gradient_pair = std::pair<std::vector<double>, double>;
+
 class LogisticRegression {
 private:
-    double W, B; // Weights
+    std::vector<double> W; // Weights
+    double B; // Bias
     double alpha; // Learning rate
     int epochs; // Epochs
+    int num_features; // Number of features
 
     std::mt19937 gen;
     std::uniform_real_distribution<double> distribution;
+
+    bool is_init;
+
+    void init_weights(size_t features) {
+        num_features = features;
+        W.resize(num_features);
+        // Initialize weights with small random values
+        for (size_t i = 0; i < num_features; ++i) {
+            W[i] = distribution(gen);
+        }
+        B = distribution(gen);
+    }
 
 public:
     LogisticRegression(int num_epochs = 5000, double learning_rate = 1e-3, unsigned int seed = 0)
         :   gen(seed),                  // 1. Seed the generator using the device
             distribution(-1.0, 1.0),    // 2. Initialize the distribution range
-            W(distribution(gen)),       // 3. Initialize W with a random value
-            B(distribution(gen)),       // 4. Initialize B with a random value
             alpha(learning_rate),
-            epochs(num_epochs)
+            epochs(num_epochs),
+            is_init(false)
     {}
 
-    // Linear equation: Y = 1 / (1 + exp(-Wx - B))
-    double f(double X) const {
-        return std::pow(1 + std::exp(-1 * (W*X + B)), -1);
-    }
+    // Y = 1 / (1 + exp(-(W . X) - B))
+    double f(const std::vector<double>& X, bool is_hpx);
 
-    double predict(double X) const {
-        return (f(X) > 0.5) ? 1 : 0;
-    }
+    int predict(const std::vector<double>& X, bool is_hpx);
 
-    std::vector<int> predict(std::vector<double> X) const {
-        std::vector<int> Y;
-        for (auto& x : X) {
-            Y.push_back(predict(x));
-        }
-        return Y;
-    }
+    std::vector<int> predict(const std::vector<std::vector<double>>& X);
 
-    double fit(std::vector<std::pair<double, int>> D);
-
-    double fit(std::vector<double> X, std::vector<int> Y);
+    double fit(std::vector<std::vector<double>> X, std::vector<int> Y);
 };

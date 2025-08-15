@@ -42,7 +42,7 @@ public:
     {}
 
     // Y = (W . X) + B
-    double predict(const std::vector<double>& X);
+    double predict(const std::vector<double>& X, bool is_hpx);
 
     std::vector<double> predict(std::vector<std::vector<double>>& X);
 

@@ -1,9 +1,18 @@
 #include "LinearRegression.hpp"
 
-double LinearRegression::predict(const std::vector<double>& X) {
-    double dot_product = hpx::transform_reduce(
-        W.begin(), W.end(), X.begin(), 0.0
-    );
+double LinearRegression::predict(const std::vector<double>& X, bool is_hpx = false) {
+    double dot_product;
+    if (is_hpx) {
+        dot_product = hpx::transform_reduce(
+            hpx::execution::par,
+            W.begin(), W.end(), X.begin(), 0.0
+        );
+    }
+    else {
+        dot_product = hpx::transform_reduce(
+            W.begin(), W.end(), X.begin(), 0.0
+        );
+    }
     return dot_product + B;
 }
 
@@ -12,7 +21,7 @@ std::vector<double> LinearRegression::predict(std::vector<std::vector<double>>& 
     hpx::run_as_hpx_thread([&] {
         hpx::transform(hpx::execution::par,
             X.begin(), X.end(), Y_pred.begin(),
-            [this](const auto& x) { return this->predict(x); }
+            [this](const auto& x) { return this->predict(x, true); }
         );
     });
 
@@ -20,7 +29,6 @@ std::vector<double> LinearRegression::predict(std::vector<std::vector<double>>& 
 }
 
 double LinearRegression::fit(std::vector<std::vector<double>> X, std::vector<double> Y) {
-    // hpx::util::zip_iterator
     size_t n_samples = X.size();
 
     if (!is_init) {

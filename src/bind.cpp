@@ -40,7 +40,7 @@ NB_MODULE(_ml_hpx_impl, m) {
         )
 
         // Bind the vectorized 'predict' methods
-        .def("predict", nb::overload_cast<const std::vector<double>&>(&LinearRegression::predict),
+        .def("predict", nb::overload_cast<const std::vector<double>&, bool>(&LinearRegression::predict),
             "Predicts Y for a single feature vector X."
         )
 
@@ -57,21 +57,16 @@ NB_MODULE(_ml_hpx_impl, m) {
             nb::arg("seed") = 0
         )
 
-        // Method bindings
-        .def("f", &LogisticRegression::f,
-            "Calculates Y = 1 / (1 + exp(-Wx - B)) for a single X.")
+        .def("fit", &LogisticRegression::fit,
+            "Trains the model using input features X and target Y."
+        )
 
         // Overloaded predict method bindings
-        .def("predict", nb::overload_cast<double>(&LogisticRegression::predict, nb::const_),
-            "Predicts Y for a single X value.")
-        .def("predict", nb::overload_cast<std::vector<double>>(&LogisticRegression::predict, nb::const_),
-            "Predicts Y for a vector of X values.")
+        .def("predict", nb::overload_cast<const std::vector<double>&, bool>(&LogisticRegression::predict),
+            "Predicts Y for a single feature vector X.")
 
-        // Overloaded fit method bindings
-        .def("fit", nb::overload_cast<std::vector<std::pair<double, int>>>(&LogisticRegression::fit),
-            "Trains the model using the provided data D (vector of (input, target) pairs).")
-        .def("fit", nb::overload_cast<std::vector<double>, std::vector<int>>(&LogisticRegression::fit),
-            "Trains the model using the provided input X and target Y.");
+        .def("predict", nb::overload_cast<const std::vector<std::vector<double>>&>(&LogisticRegression::predict),
+            "Predicts Y for a batch of feature vectors X.");
 
     nb::class_<KNearestNeighbours>(m, "KNearestNeighbours")
         // Constructor binding
