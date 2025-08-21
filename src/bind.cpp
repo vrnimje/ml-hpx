@@ -1,6 +1,7 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/vector.h> // For std::vector conversion
 #include <nanobind/stl/pair.h>   // For std::pair conversion
+#include <nanobind/stl/string.h> // For std::string conversion
 
 #include <hpx/hpx_start.hpp>
 
@@ -10,6 +11,9 @@
 #include "KMeansClustering.hpp"
 #include "Perceptron.hpp"
 #include "SVC.hpp"
+#include "NeuralNetwork.hpp"
+#include "Layer.hpp"
+#include "Optimizer.hpp"
 
 namespace nb = nanobind;
 
@@ -139,4 +143,19 @@ NB_MODULE(_ml_hpx_impl, m) {
             "Trains the model using the provided data D (vector of (input, target) pairs).")
         .def("fit", nb::overload_cast<std::vector<std::pair<double, double>>, std::vector<int>>(&SVC::fit),
             "Trains the model using the provided input X and target Y.");
+
+    nb::class_<Layer>(m, "Layer")
+        .def(nb::init<int, int, std::string>())
+        .def("forward", &Layer::forward)
+        .def("backward", &Layer::backward);
+
+    nb::class_<Optimizer>(m, "Optimizer");
+
+    nb::class_<SGD, Optimizer>(m, "SGD")
+        .def(nb::init<double>());
+
+    nb::class_<NeuralNetwork>(m, "NeuralNetwork")
+        .def(nb::init<std::vector<Layer*>&, Optimizer*>())
+        .def("fit", &NeuralNetwork::fit)
+        .def("predict", &NeuralNetwork::predict);
 }

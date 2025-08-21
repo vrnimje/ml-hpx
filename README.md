@@ -19,85 +19,6 @@ pip install .
 
 [Script](./python_tests/lin_reg.py):
 
-```py
-from ml_hpx import LinearRegression
-import pandas as pd
-from sklearn.linear_model import LinearRegression as SklearnLinearRegression
-from sklearn.metrics import mean_squared_error
-from time import perf_counter
-
-print("### Simple Linear Regression")
-# Load data
-df = pd.read_csv('./datasets/linear_regressor_dataset_10000.csv')
-X = df[['x']]
-Y = df['y']
-
-X_values = X.values
-Y_values = Y.values
-
-# ML-HPX Linear Regression
-lin_reg = LinearRegression(5000, 1e-5)
-
-start_hpx = perf_counter()
-hpx_mse = lin_reg.fit(X_values.tolist(), Y_values.tolist())
-
-y_pred_hpx = lin_reg.predict(X_values.tolist())
-
-end_hpx = perf_counter()
-
-print(f"ML-HPX Linear Regression MSE: {hpx_mse:.4f}")
-print(f"ML-HPX Linear Regression Time: {end_hpx - start_hpx:.4f} seconds")
-
-# sklearn Linear Regression
-sklearn_lin_reg = SklearnLinearRegression()
-
-start_sklearn = perf_counter()
-sklearn_lin_reg.fit(X_values, Y_values)
-y_pred_sklearn = sklearn_lin_reg.predict(X_values)
-
-sklearn_mse = mean_squared_error(Y_values, y_pred_sklearn)
-end_sklearn = perf_counter()
-
-print(f"Sklearn Linear Regression MSE: {sklearn_mse:.4f}")
-print(f"Sklearn Linear Regression Time: {end_sklearn - start_sklearn:.4f} seconds")
-
-print("\n### Multi-feature Linear Regression")
-
-# Load data
-df = pd.read_csv('./datasets/multi-feature-linear-regression.csv')
-
-# Use all feature columns
-X = df.drop(columns=['y'])
-Y = df['y']
-
-X_values = X.values
-Y_values = Y.values
-
-# ML-HPX Linear Regression
-# Here, 5000 could be the number of iterations, and 1e-5 the learning rate (depending on implementation)
-lin_reg = LinearRegression(5000, 1e-5)
-
-start_hpx = perf_counter()
-hpx_mse = lin_reg.fit(X_values.tolist(), Y_values.tolist())
-y_pred_hpx = lin_reg.predict(X_values.tolist())
-end_hpx = perf_counter()
-
-print(f"ML-HPX Linear Regression MSE: {hpx_mse:.4f}")
-print(f"ML-HPX Linear Regression Time: {end_hpx - start_hpx:.4f} seconds")
-
-# sklearn Linear Regression
-sklearn_lin_reg = SklearnLinearRegression()
-
-start_sklearn = perf_counter()
-sklearn_lin_reg.fit(X_values, Y_values)
-y_pred_sklearn = sklearn_lin_reg.predict(X_values)
-sklearn_mse = mean_squared_error(Y_values, y_pred_sklearn)
-end_sklearn = perf_counter()
-
-print(f"Sklearn Linear Regression MSE: {sklearn_mse:.4f}")
-print(f"Sklearn Linear Regression Time: {end_sklearn - start_sklearn:.4f} seconds")
-```
-
 ```sh
 $ python python_tests/lin_reg.py
 ### Simple Linear Regression
@@ -119,107 +40,6 @@ As `scikit-learn` uses a closed-form solution to solve the linear regression , w
 
 [Script](./python_tests/log_reg.py):
 
-```py
-from ml_hpx import LogisticRegression
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-from sklearn.linear_model import LogisticRegression as SklearnLogReg
-from sklearn.preprocessing import StandardScaler
-from time import perf_counter
-
-print("### Simple Logistic Regression")
-# Load data
-df = pd.read_csv('./datasets/logistic_regression_dataset_10000.csv')
-X = df[['x']]
-y = df['class']
-
-# Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
-# Standardize features
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
-
-X_train_flat = X_train.tolist()
-X_test_flat = X_test.tolist()
-y_train_vals = y_train.values
-
-# ML-HPX Logistic Regression
-log_reg = LogisticRegression(5000, 0.005, 123)
-
-start_hpx = perf_counter()
-log_reg.fit(X_train_flat, y_train_vals)
-y_pred_hpx = log_reg.predict(X_test_flat)
-end_hpx = perf_counter()
-
-hpx_accuracy = accuracy_score(y_test, y_pred_hpx)
-
-print(f"ML-HPX Logistic Regression accuracy: {hpx_accuracy:.4f}")
-print(f"ML-HPX Logistic Regression time: {end_hpx - start_hpx:.4f} seconds")
-
-# sklearn Logistic Regression
-sklearn_model = SklearnLogReg()
-
-start_sklearn = perf_counter()
-sklearn_model.fit(X_train, y_train)
-y_pred_sklearn = sklearn_model.predict(X_test)
-end_sklearn = perf_counter()
-
-sklearn_accuracy = accuracy_score(y_test, y_pred_sklearn)
-
-print(f"Sklearn Logistic Regression accuracy: {sklearn_accuracy:.4f}")
-print(f"Sklearn Logistic Regression time: {end_sklearn - start_sklearn:.4f} seconds")
-
-print("\n### Multi-feature Logistic Regression")
-
-# Load multi-feature dataset
-df_multi = pd.read_csv('./datasets/multi-feature-log-regression.csv')
-X_multi = df_multi.drop(columns=['y'])
-y_multi = df_multi['y']
-
-# Split into train/test
-X_train_multi, X_test_multi, y_train_multi, y_test_multi = train_test_split(
-    X_multi, y_multi, test_size=0.2, random_state=42
-)
-
-# Standardize features
-scaler_multi = StandardScaler()
-X_train_multi = scaler_multi.fit_transform(X_train_multi)
-X_test_multi = scaler_multi.transform(X_test_multi)
-
-X_train_multi_list = X_train_multi.tolist()
-X_test_multi_list = X_test_multi.tolist()
-y_train_multi_vals = y_train_multi.values
-
-# ML-HPX Logistic Regression
-log_reg_multi = LogisticRegression(5000, 0.005, 123)
-
-start_hpx_multi = perf_counter()
-log_reg_multi.fit(X_train_multi_list, y_train_multi_vals)
-y_pred_multi_hpx = log_reg_multi.predict(X_test_multi_list)
-end_hpx_multi = perf_counter()
-
-hpx_accuracy_multi = accuracy_score(y_test_multi, y_pred_multi_hpx)
-
-print(f"ML-HPX Logistic Regression accuracy: {hpx_accuracy_multi:.4f}")
-print(f"ML-HPX Logistic Regression time: {end_hpx_multi - start_hpx_multi:.4f} seconds")
-
-# sklearn Logistic Regression
-sklearn_model_multi = SklearnLogReg()
-
-start_sklearn_multi = perf_counter()
-sklearn_model_multi.fit(X_train_multi, y_train_multi)
-y_pred_multi_sklearn = sklearn_model_multi.predict(X_test_multi)
-end_sklearn_multi = perf_counter()
-
-sklearn_accuracy_multi = accuracy_score(y_test_multi, y_pred_multi_sklearn)
-
-print(f"Sklearn Logistic Regression accuracy: {sklearn_accuracy_multi:.4f}")
-print(f"Sklearn Logistic Regression time: {end_sklearn_multi - start_sklearn_multi:.4f} seconds")
-```
-
 ```sh
 $ python python_tests/log_reg.py
 ### Simple Logistic Regression
@@ -239,43 +59,6 @@ Sklearn Logistic Regression time: 0.0142 seconds
 
 [Script](./python_tests/knn.py):
 
-```py
-from ml_hpx import KNearestNeighbours
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-from sklearn.preprocessing import StandardScaler
-import pandas as pd
-
-df = pd.read_csv('./datasets/classified_points_dataset.csv')
-
-X = df[['x', 'y']]
-y = df['class']
-
-# Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
-
-knn = KNearestNeighbours(k=3)
-
-knn.fit(X_train.tolist(), y_train.values)
-
-y_pred = knn.predict(X_test.tolist())
-
-print("ML-HPX accuracy", accuracy_score(y_pred, y_test))
-
-knn_sklearn = KNeighborsClassifier(n_neighbors=3)
-
-knn_sklearn.fit(X_train, y_train)
-
-y_pred = knn.predict(X_test)
-
-print("Sklearn accuracy", accuracy_score(y_pred, y_test))
-```
-
 ```sh
 $ python python_tests/knn.py
 ML-HPX accuracy: 1.0000
@@ -288,111 +71,9 @@ Sklearn time: 0.0090 seconds
 
 [Script](./python_tests/kmeans.py):
 
-```py
-from ml_hpx import KMeansClustering
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
-import pandas as pd
-from time import perf_counter
-
-# Load dataset
-df = pd.read_csv('./datasets/kmeans_test_dataset.csv')
-
-X = df[['x', 'y']]
-
-# Standardize features
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
-
-### scikit-learn KMeans ###
-k = 5
-kmeans = KMeans(n_clusters=k, random_state=42)
-
-start_kmeans = perf_counter()
-kmeans.fit(X_scaled)
-end_kmeans = perf_counter()
-
-# Add cluster labels to DataFrame
-df['cluster'] = kmeans.labels_
-
-# Print performance
-print(f"Sklearn KMeans time: {end_kmeans - start_kmeans:.4f} seconds")
-print(f"Inertia: {kmeans.inertia_:.4f}")
-
-kmeans_hpx = KMeansClustering(k=5)
-
-start_hpx = perf_counter()
-sse = kmeans_hpx.fit(X_scaled.tolist())
-end_hpx = perf_counter()
-
-print(f"ML-HPX KMeans time: {end_hpx - start_hpx:.4f} seconds")
-print(f"Inertia: {sse:.4f}")
-```
-
-```sh
-$ python python_tests/kmeans.py
-Sklearn KMeans time: 0.0140 seconds
-Inertia: 543.3955
-ML-HPX KMeans time: 0.0085 seconds
-Inertia: 543.3952
-```
-
 5. Perceptron classifier
 
 [Script](./python_tests/perceptron.py):
-
-```py
-from ml_hpx import Perceptron
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-from sklearn.linear_model import Perceptron as SklearnPerceptron
-from sklearn.preprocessing import StandardScaler
-from time import perf_counter
-
-# Load data
-df = pd.read_csv('./datasets/logistic_regression_dataset_10000.csv')
-X = df[['x']]
-y = df['class']
-
-# Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
-# Standardize features
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
-
-X_train_flat = X_train.flatten().tolist()
-X_test_flat = X_test.flatten().tolist()
-y_train_vals = y_train.values
-
-# ML-HPX Logistic Regression
-perc = Perceptron()
-
-start_hpx = perf_counter()
-perc.fit(X_train_flat, y_train_vals)
-y_pred_hpx = perc.predict(X_test_flat)
-end_hpx = perf_counter()
-
-hpx_accuracy = accuracy_score(y_test, y_pred_hpx)
-
-print(f"ML-HPX Logistic Regression accuracy: {hpx_accuracy:.4f}")
-print(f"ML-HPX Logistic Regression time: {end_hpx - start_hpx:.4f} seconds")
-
-# sklearn Logistic Regression
-sklearn_model = SklearnPerceptron()
-
-start_sklearn = perf_counter()
-sklearn_model.fit(X_train, y_train)
-y_pred_sklearn = sklearn_model.predict(X_test)
-end_sklearn = perf_counter()
-
-sklearn_accuracy = accuracy_score(y_test, y_pred_sklearn)
-
-print(f"Sklearn Logistic Regression accuracy: {sklearn_accuracy:.4f}")
-print(f"Sklearn Logistic Regression time: {end_sklearn - start_sklearn:.4f} seconds")
-```
 
 ```sh
 $ python python_tests/perceptron.py
@@ -406,65 +87,24 @@ Sklearn Perceptron time: 0.0028 seconds
 
 [Script](./python_tests/svc.py):
 
-```py
-from ml_hpx import SVC
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-from sklearn.svm import SVC as SklearnSVC
-from sklearn.preprocessing import StandardScaler
-from time import perf_counter
-
-# Load data
-df = pd.read_csv('./datasets/svc_test_dataset.csv')
-X = df[['x', 'y']]
-y = df['label']
-
-# Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
-# Standardize features
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
-
-X_train_flat = X_train.tolist()
-X_test_flat = X_test.tolist()
-y_train_vals = y_train.values
-
-# ML-HPX SVC
-svc = SVC()
-
-start_hpx = perf_counter()
-svc.fit(X_train_flat, y_train_vals)
-y_pred_hpx = svc.predict(X_test_flat)
-# print(x)
-end_hpx = perf_counter()
-
-hpx_accuracy = accuracy_score(y_test, y_pred_hpx)
-
-print(f"ML-HPX SVC accuracy: {hpx_accuracy:.4f}")
-print(f"ML-HPX SVC time: {end_hpx - start_hpx:.4f} seconds")
-
-# sklearn SVC
-sklearn_model = SklearnSVC()
-
-start_sklearn = perf_counter()
-sklearn_model.fit(X_train, y_train)
-y_pred_sklearn = sklearn_model.predict(X_test)
-end_sklearn = perf_counter()
-
-sklearn_accuracy = accuracy_score(y_test, y_pred_sklearn)
-print(f"Sklearn SVC accuracy: {sklearn_accuracy:.4f}")
-print(f"Sklearn SVC time: {end_sklearn - start_sklearn:.4f} seconds")
-```
-
 ```sh
 $ python python_tests/svc.py
 ML-HPX SVC accuracy: 1.0000
 ML-HPX SVC time: 0.0220 seconds
 Sklearn SVC accuracy: 0.9970
 Sklearn SVC time: 0.1196 seconds
+```
+
+7. Neural Network
+
+[Script](./python_tests/nn.py):
+
+```sh
+$ python python_tests/nn.py
+HPX NN training time: 0.001217 sec
+HPX Predictions: [[0.06723812758653255], [0.9431358899595929], [0.9532029734896459], [0.050276559281559836]]
+TensorFlow training time: 19.081340 sec
+TF Predictions: [[0.5016673803329468], [0.9870261549949646], [0.5016673803329468], [0.010493488050997257]]
 ```
 
 ## Misc. Benchmarks
