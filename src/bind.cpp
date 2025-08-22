@@ -157,5 +157,6 @@ NB_MODULE(_ml_hpx_impl, m) {
     nb::class_<NeuralNetwork>(m, "NeuralNetwork")
         .def(nb::init<std::vector<Layer*>&, Optimizer*>())
         .def("fit", &NeuralNetwork::fit)
-        .def("predict", &NeuralNetwork::predict);
+        .def("predict", &NeuralNetwork::predict)
+        .def("evaluate", &NeuralNetwork::evaluate);
 }

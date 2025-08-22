@@ -15,11 +15,18 @@ public:
         this->optimizer = optimizer;
     }
 
-    void fit(const std::vector<std::vector<double>>& inputs,
-             const std::vector<std::vector<double>>& targets,
-             int epochs);
+    void fit(
+        const std::vector<std::vector<double>>& inputs,
+        const std::vector<std::vector<double>>& targets,
+        int epochs
+    );
 
     std::vector<std::vector<double>> predict(const std::vector<std::vector<double>>& inputs);
+
+    std::pair<double, double> evaluate(
+        const std::vector<std::vector<double>>& inputs,
+        const std::vector<std::vector<double>>& targets
+    );
 };
 
 #endif
