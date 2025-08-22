@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(ml-hpx CXX)
-find_package(HPX REQUIRED)
+
+option(WITH_CUSTOM_HPX "Use available HPX" OFF)
 
 # Warn if the user invokes CMake directly
 if (NOT SKBUILD)
@@ -37,6 +36,9 @@ find_package(Python 3.10
 
 # Import nanobind through CMake's find_package mechanism
 find_package(nanobind CONFIG REQUIRED)
+
+# Import HPX
+include(cmake/HPXSetup.cmake)
 
 nanobind_add_module(_ml_hpx_impl
     STABLE_ABI
