@@ -65,16 +65,16 @@ target_link_libraries(_ml_hpx_impl
 
 install(TARGETS _ml_hpx_impl LIBRARY DESTINATION ml_hpx)
 
-add_executable(linear_reg_benchmark bench/linear_reg.cpp)
-target_link_libraries(linear_reg_benchmark
-    HPX::hpx
-    HPX::wrap_main
-    HPX::iostreams_component
-)
+# add_executable(linear_reg_benchmark bench/linear_reg.cpp)
+# target_link_libraries(linear_reg_benchmark
+#     HPX::hpx
+#     HPX::wrap_main
+#     HPX::iostreams_component
+# )
 
-add_executable(log_reg_benchmark bench/log_reg.cpp)
-target_link_libraries(log_reg_benchmark
-    HPX::hpx
-    HPX::wrap_main
-    HPX::iostreams_component
-)
+# add_executable(log_reg_benchmark bench/log_reg.cpp)
+# target_link_libraries(log_reg_benchmark
+#     HPX::hpx
+#     HPX::wrap_main
+#     HPX::iostreams_component
+# )
