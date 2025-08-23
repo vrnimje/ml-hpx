@@ -65,6 +65,16 @@ target_link_libraries(_ml_hpx_impl
 
 install(TARGETS _ml_hpx_impl LIBRARY DESTINATION ml_hpx)
 
+install(
+    DIRECTORY ${HPX_BINARY_DIR}/lib/
+    DESTINATION ml_hpx
+    FILES_MATCHING PATTERN "libhpx*.so*"
+)
+
+set_target_properties(_ml_hpx_impl PROPERTIES
+    INSTALL_RPATH "$ORIGIN"
+)
+
 # add_executable(linear_reg_benchmark bench/linear_reg.cpp)
 # target_link_libraries(linear_reg_benchmark
 #     HPX::hpx
