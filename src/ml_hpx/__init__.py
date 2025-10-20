@@ -25,6 +25,4 @@ def safe_initialize():
 
 safe_initialize()
 
-initialize()
-
 atexit.register(finalize)
