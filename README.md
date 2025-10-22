@@ -17,107 +17,108 @@ pip install .
 
 1. Linear Regression
 
-[Script](./python_tests/lin_reg.py):
+    [Script](./python_tests/lin_reg.py):
 
-```sh
-$ python python_tests/lin_reg.py
-### Simple Linear Regression
-ML-HPX Linear Regression MSE: 51.9648
-ML-HPX Linear Regression Time: 1.8472 seconds
-Sklearn Linear Regression MSE: 99.7971
-Sklearn Linear Regression Time: 0.0022 seconds
+    ```sh
+    $ python python_tests/lin_reg.py
+    ### Simple Linear Regression
+    ML-HPX Linear Regression MSE: 51.9648
+    ML-HPX Linear Regression Time: 1.8472 seconds
+    Sklearn Linear Regression MSE: 99.7971
+    Sklearn Linear Regression Time: 0.0022 seconds
 
-### Multi-feature Linear Regression
-ML-HPX Linear Regression MSE: 15.8709
-ML-HPX Linear Regression Time: 1.2715 seconds
-Sklearn Linear Regression MSE: 25.0206
-Sklearn Linear Regression Time: 0.0029 seconds
-```
+    ### Multi-feature Linear Regression
+    ML-HPX Linear Regression MSE: 15.8709
+    ML-HPX Linear Regression Time: 1.2715 seconds
+    Sklearn Linear Regression MSE: 25.0206
+    Sklearn Linear Regression Time: 0.0029 seconds
+    ```
 
-As `scikit-learn` uses a closed-form solution to solve the linear regression , while `ml-hpx` uses an iterative optimization algorithm, hence, we see these large performance differences.
+    As `scikit-learn` uses a closed-form solution to solve the linear regression , while `ml-hpx` uses an iterative optimization algorithm, hence, we see these large performance differences.
+
 
 2. Logistic Regression
 
-[Script](./python_tests/log_reg.py):
+    [Script](./python_tests/log_reg.py):
 
-```sh
-$ python python_tests/log_reg.py
-### Simple Logistic Regression
-ML-HPX Logistic Regression accuracy: 0.9820
-ML-HPX Logistic Regression time: 1.2471 seconds
-Sklearn Logistic Regression accuracy: 0.9830
-Sklearn Logistic Regression time: 0.0279 seconds
+    ```sh
+    $ python python_tests/log_reg.py
+    ### Simple Logistic Regression
+    ML-HPX Logistic Regression accuracy: 0.9820
+    ML-HPX Logistic Regression time: 1.2471 seconds
+    Sklearn Logistic Regression accuracy: 0.9830
+    Sklearn Logistic Regression time: 0.0279 seconds
 
-### Multi-feature Logistic Regression
-ML-HPX Logistic Regression accuracy: 0.9530
-ML-HPX Logistic Regression time: 1.0675 seconds
-Sklearn Logistic Regression accuracy: 0.9535
-Sklearn Logistic Regression time: 0.0142 seconds
-```
+    ### Multi-feature Logistic Regression
+    ML-HPX Logistic Regression accuracy: 0.9530
+    ML-HPX Logistic Regression time: 1.0675 seconds
+    Sklearn Logistic Regression accuracy: 0.9535
+    Sklearn Logistic Regression time: 0.0142 seconds
+    ```
 
 3. K-Nearest Neighbours classifier
 
-[Script](./python_tests/knn.py):
+    [Script](./python_tests/knn.py):
 
-```sh
-$ python python_tests/knn.py
-ML-HPX accuracy: 1.0000
-ML-HPX time: 0.1780 seconds
-Sklearn accuracy: 1.0000
-Sklearn time: 0.0090 seconds
-```
+    ```sh
+    $ python python_tests/knn.py
+    ML-HPX accuracy: 1.0000
+    ML-HPX time: 0.1780 seconds
+    Sklearn accuracy: 1.0000
+    Sklearn time: 0.0090 seconds
+    ```
 
-4. k-Means Clustering
+<!--4. k-Means Clustering
 
-[Script](./python_tests/kmeans.py):
+[Script](./python_tests/kmeans.py):-->
 
-5. Perceptron classifier
+4. Perceptron classifier
 
-[Script](./python_tests/perceptron.py):
+    [Script](./python_tests/perceptron.py):
 
-```sh
-$ python python_tests/perceptron.py
-ML-HPX Perceptron accuracy: 1.0000
-ML-HPX Perceptron time: 0.0016 seconds
-Sklearn Perceptron accuracy: 0.9995
-Sklearn Perceptron time: 0.0028 seconds
-```
+    ```sh
+    $ python python_tests/perceptron.py
+    ML-HPX Perceptron accuracy: 1.0000
+    ML-HPX Perceptron time: 0.0016 seconds
+    Sklearn Perceptron accuracy: 0.9995
+    Sklearn Perceptron time: 0.0028 seconds
+    ```
 
-6. SVM Classifier
+5. SVM Classifier
 
-[Script](./python_tests/svc.py):
+    [Script](./python_tests/svc.py):
 
-```sh
-$ python python_tests/svc.py
-ML-HPX SVC accuracy: 1.0000
-ML-HPX SVC time: 0.0220 seconds
-Sklearn SVC accuracy: 0.9970
-Sklearn SVC time: 0.1196 seconds
-```
+    ```sh
+    $ python python_tests/svc.py
+    ML-HPX SVC accuracy: 1.0000
+    ML-HPX SVC time: 0.0220 seconds
+    Sklearn SVC accuracy: 0.9970
+    Sklearn SVC time: 0.1196 seconds
+    ```
 
-7. Neural Network
+6. Neural Network
 
-[Script](./python_tests/nn.py):
+    [Script](./python_tests/nn.py):
 
-Compared against tensorflow_cpu on 11th Gen Intel® Core™ i5-11300H × 8
+    Compared against tensorflow_cpu on 11th Gen Intel® Core™ i5-11300H × 8
 
-```sh
-$ python python_tests/nn.py
-HPX NN training time: 0.001217 sec
-HPX Predictions: [[0.06723812758653255], [0.9431358899595929], [0.9532029734896459], [0.050276559281559836]]
-TensorFlow training time: 19.081340 sec
-TF Predictions: [[0.5016673803329468], [0.9870261549949646], [0.5016673803329468], [0.010493488050997257]]
-```
-[Script](./python_tests/nn_2.py):
+    ```sh
+    $ python python_tests/nn.py
+    HPX NN training time: 0.001217 sec
+    HPX Predictions: [[0.06723812758653255], [0.9431358899595929], [0.9532029734896459], [0.050276559281559836]]
+    TensorFlow training time: 19.081340 sec
+    TF Predictions: [[0.5016673803329468], [0.9870261549949646], [0.5016673803329468], [0.010493488050997257]]
+    ```
+    [Script](./python_tests/nn_2.py):
 
-```sh
-TensorFlow training time: 9.295418 sec
-TF Accuracy: 0.9668, Loss: 0.0836
-TF Predictions (first 10): [0.9885914325714111, 0.11424487084150314, 0.014540525153279305, 0.007555932737886906, 0.00012698175851255655, 0.9988582730293274, 0.09589959681034088, 0.9277084469795227, 0.9998912215232849, 0.12737293541431427]
-HPX NN training time: 1.882052 sec
-HPX NN Accuracy: 0.9780, Loss: 0.0180
-HPX Predictions (first 10): [[0.9999939742043228], [0.9991363289582976], [1.195073234278672e-06], [5.306765734111496e-07], [7.105306254994499e-08], [0.9999999200370617], [0.0014173977894342772], [0.9998889419155234], [0.9998085469481175], [0.001822480821572805]]
-```
+    ```sh
+    TensorFlow training time: 9.295418 sec
+    TF Accuracy: 0.9668, Loss: 0.0836
+    TF Predictions (first 10): [0.9885914325714111, 0.11424487084150314, 0.014540525153279305, 0.007555932737886906, 0.00012698175851255655, 0.9988582730293274, 0.09589959681034088, 0.9277084469795227, 0.9998912215232849, 0.12737293541431427]
+    HPX NN training time: 1.882052 sec
+    HPX NN Accuracy: 0.9780, Loss: 0.0180
+    HPX Predictions (first 10): [[0.9999939742043228], [0.9991363289582976], [1.195073234278672e-06], [5.306765734111496e-07], [7.105306254994499e-08], [0.9999999200370617], [0.0014173977894342772], [0.9998889419155234], [0.9998085469481175], [0.001822480821572805]]
+    ```
 
 <!--## Misc. Benchmarks
 

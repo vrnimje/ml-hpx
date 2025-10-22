@@ -7,7 +7,7 @@ void NeuralNetwork::fit(const std::vector<std::vector<double>>& inputs,
         double epoch_loss = 0.0;
 
         for (size_t n = 0; n < inputs.size(); n++) {
-            // ---- Forward Pass ----
+            // Forward Pass
             std::vector<std::vector<double>> activations;
             activations.push_back(inputs[n]);
 
@@ -27,7 +27,7 @@ void NeuralNetwork::fit(const std::vector<std::vector<double>>& inputs,
             }
             epoch_loss += sample_loss / prediction.size();
 
-            // ---- Backward Pass ----
+            // Backward Pass
             for (int l = layers.size() - 1; l >= 0; --l) {
                 auto grads = layers[l]->backward(
                     activations[l],
@@ -68,7 +68,7 @@ std::pair<double, double> NeuralNetwork::evaluate(const std::vector<std::vector<
         const auto& y_pred = predictions[n];
         const auto& y_true = targets[n];
 
-        // ---- Loss (MSE) ----
+        // Loss (MSE)
         double sample_loss = 0.0;
         for (size_t i = 0; i < y_pred.size(); i++) {
             double diff = y_pred[i] - y_true[i];
@@ -76,7 +76,7 @@ std::pair<double, double> NeuralNetwork::evaluate(const std::vector<std::vector<
         }
         total_loss += sample_loss / y_pred.size();
 
-        // ---- Accuracy ----
+        // Accuracy
         if (y_pred.size() == 1) {
             int pred_label = (y_pred[0] >= 0.5) ? 1 : 0;
             int true_label = static_cast<int>(y_true[0]);
