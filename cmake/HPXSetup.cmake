@@ -22,10 +22,11 @@ else()
         set(HPX_WITH_EXAMPLES OFF CACHE BOOL "")
         set(HPX_WITH_TESTS OFF CACHE BOOL "")
 
-        # Enabling GPU support
-        set(HPX_WITH_CUDA ON CACHE BOOL "")
-        # set(HPX_WITH_HIP OFF CACHE BOOL "")
-        # set(HPX_WITH_SYCL OFF CACHE BOOL "")
+        # Disbaling CUDA support
+        set(HPX_WITH_CUDA OFF CACHE BOOL "")
+        set(CMAKE_DISABLE_FIND_PACKAGE_CUDA TRUE CACHE BOOL "" FORCE)
+        set(CMAKE_DISABLE_FIND_PACKAGE_CUDAToolkit TRUE CACHE BOOL "" FORCE)
+        set(CMAKE_CUDA_COMPILER NOTFOUND)
 
         # Other options
         set(HPX_WITH_DYNAMIC_HPX_MAIN ON CACHE BOOL "")
