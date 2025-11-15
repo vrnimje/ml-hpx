@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-set(CMAKE_DISABLE_FIND_PACKAGE_CUDA TRUE CACHE BOOL "" FORCE)
-set(CMAKE_DISABLE_FIND_PACKAGE_CUDAToolkit TRUE CACHE BOOL "" FORCE)
-set(CMAKE_CUDA_COMPILER NOTFOUND)
+set(CMAKE_BUILD_PARALLEL_LEVEL 1)
 
 project(ml-hpx CXX)
 
@@ -47,9 +45,6 @@ include(cmake/HPXSetup.cmake)
 nanobind_add_module(_ml_hpx_impl
     STABLE_ABI
         src/bind.cpp
-        src/LinearRegression.cpp
-        src/LogisticRegression.cpp
-        src/KNearestNeighbours.cpp
         src/KMeansClustering.cpp
         src/Perceptron.cpp
         src/SVC.cpp

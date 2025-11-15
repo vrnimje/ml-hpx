@@ -5,15 +5,12 @@
 
 #include <hpx/hpx_start.hpp>
 
-#include "LinearRegression.hpp"
-#include "LogisticRegression.hpp"
-#include "KNearestNeighbours.hpp"
 #include "KMeansClustering.hpp"
 #include "Perceptron.hpp"
 #include "SVC.hpp"
-#include "NeuralNetwork.hpp"
 #include "Layer.hpp"
 #include "Optimizer.hpp"
+#include "NeuralNetwork.hpp"
 
 namespace nb = nanobind;
 
@@ -30,65 +27,6 @@ NB_MODULE(_ml_hpx_impl, m) {
             hpx::post([]() { hpx::finalize(); });
         }
     }, "Finalizes the HPX runtime.");
-
-    nb::class_<LinearRegression>(m, "LinearRegression")
-        .def(nb::init<int, double, unsigned int>(),
-            "Initializes the LogisticRegression model.",
-            nb::arg("num_epochs") = 5000,
-            nb::arg("learning_rate") = 1e-3,
-            nb::arg("seed") = 0
-        )
-
-        .def("fit", &LinearRegression::fit,
-            "Trains the model using input features X and target Y."
-        )
-
-        // Bind the vectorized 'predict' methods
-        .def("predict", nb::overload_cast<const std::vector<double>&, bool>(&LinearRegression::predict),
-            "Predicts Y for a single feature vector X."
-        )
-
-        .def("predict", nb::overload_cast<std::vector<std::vector<double>>&>(&LinearRegression::predict),
-            "Predicts Y for a batch of feature vectors X."
-        );
-
-    nb::class_<LogisticRegression>(m, "LogisticRegression")
-        // Constructor binding
-        .def(nb::init<int, double, unsigned int>(),
-            "Initializes the LogisitcRegression classifier model.",
-            nb::arg("num_epochs") = 5000,
-            nb::arg("learning_rate") = 1e-3,
-            nb::arg("seed") = 0
-        )
-
-        .def("fit", &LogisticRegression::fit,
-            "Trains the model using input features X and target Y."
-        )
-
-        // Overloaded predict method bindings
-        .def("predict", nb::overload_cast<const std::vector<double>&, bool>(&LogisticRegression::predict),
-            "Predicts Y for a single feature vector X.")
-
-        .def("predict", nb::overload_cast<const std::vector<std::vector<double>>&>(&LogisticRegression::predict),
-            "Predicts Y for a batch of feature vectors X.");
-
-    nb::class_<KNearestNeighbours>(m, "KNearestNeighbours")
-        // Constructor binding
-        .def(nb::init<int>(),
-            "Initializes the KNearestNeighbours model.",
-            nb::arg("k") = 5
-        )
-
-        // Method bindings
-        .def("fit", nb::overload_cast<std::vector<std::tuple<double, double, int>>>(&KNearestNeighbours::fit),
-            "Fits the model using the provided data D (vector of (input, target) pairs).")
-        .def("fit", nb::overload_cast<std::vector<std::pair<double, double>>, std::vector<int>>(&KNearestNeighbours::fit),
-            "Fits the model using the X (input) and Y (pairs).")
-
-        .def("predict", nb::overload_cast<std::pair<double, double>>(&KNearestNeighbours::predict),
-            "Predicts class Y for a X value.")
-        .def("predict", nb::overload_cast<std::vector<std::pair<double, double>>>(&KNearestNeighbours::predict),
-            "Predicts classes Y for a vector of X values.");
 
     nb::class_<KMeansClustering>(m, "KMeansClustering")
         // Constructor binding

@@ -4,7 +4,7 @@
 #include <cmath>
 #include <functional>
 
-// ---- Activation Functions ----
+// Activation Functions
 struct Activation {
     std::function<double(double)> func;
     std::function<double(double)> deriv;
