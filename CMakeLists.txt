@@ -6,6 +6,8 @@ project(ml-hpx CXX)
 
 option(WITH_CUSTOM_HPX "Use available HPX" OFF)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 # Warn if the user invokes CMake directly
 if (NOT SKBUILD)
     message(WARNING "\
