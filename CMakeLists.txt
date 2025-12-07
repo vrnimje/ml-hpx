@@ -73,17 +73,3 @@ install(
 set_target_properties(_ml_hpx_impl PROPERTIES
     INSTALL_RPATH "$ORIGIN"
 )
-
-# add_executable(linear_reg_benchmark bench/linear_reg.cpp)
-# target_link_libraries(linear_reg_benchmark
-#     HPX::hpx
-#     HPX::wrap_main
-#     HPX::iostreams_component
-# )
-
-# add_executable(log_reg_benchmark bench/log_reg.cpp)
-# target_link_libraries(log_reg_benchmark
-#     HPX::hpx
-#     HPX::wrap_main
-#     HPX::iostreams_component
-# )

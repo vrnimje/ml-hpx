@@ -16,17 +16,22 @@ else()
         set(HPX_WITH_MALLOC "system" CACHE STRING "The memory allocator to be used by HPX")
         set(HPX_WITH_FETCH_ASIO ON CACHE BOOL "")
         set(HPX_WITH_FETCH_BOOST ON CACHE BOOL "")
-        set(HPX_WITH_FETCH_HWLOC ON CACHE BOOL "")
+
+        find_package(Hwloc QUIET)
+
+        # Determining if Hwloc needs to be fetched or not
+        if(Hwloc_FOUND)
+            message(STATUS "System hwloc found (v${Hwloc_VERSION}). Disabling internal HPX fetch.")
+            set(HPX_WITH_FETCH_HWLOC OFF CACHE BOOL "Use system hwloc")
+            set(HWLOC_ROOT "${Hwloc_INCLUDE_DIRS}" CACHE PATH "" FORCE)
+        else()
+            message(STATUS "System hwloc not found. Enabling internal HPX fetch.")
+            set(HPX_WITH_FETCH_HWLOC ON CACHE BOOL "Fetch hwloc internally")
+        endif()
 
         # Disable parts we don't need for a dependency build
         set(HPX_WITH_EXAMPLES OFF CACHE BOOL "")
         set(HPX_WITH_TESTS OFF CACHE BOOL "")
-
-        # Disbaling CUDA support
-        set(HPX_WITH_CUDA OFF CACHE BOOL "")
-        set(CMAKE_DISABLE_FIND_PACKAGE_CUDA TRUE CACHE BOOL "" FORCE)
-        set(CMAKE_DISABLE_FIND_PACKAGE_CUDAToolkit TRUE CACHE BOOL "" FORCE)
-        set(CMAKE_CUDA_COMPILER NOTFOUND)
 
         # Other options
         set(HPX_WITH_DYNAMIC_HPX_MAIN ON CACHE BOOL "")
